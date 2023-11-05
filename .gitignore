@@ -1,0 +1,12 @@
+# cache
+__pycache__
+
+# misc folders
+misc
+images
+
+# CT data - not public
+cochlea_data/Subject*
+cochlea_data/*.xlsx
+
+
