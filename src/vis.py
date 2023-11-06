@@ -52,6 +52,19 @@ def visualise_canal_planes(subjects, canal, landmarks=None):
     o3d.visualization.draw_geometries([*all_canal_meshes, *all_lines])
 
 
+def best_alignment(canal, visible=True, all=False):
+    if all: key = "all"
+    else: key = canal
+    results, fids, vars = load_fiducials_dicts(visible)
+    var = vars[key]
+    landmarks_string = fids[key]
+    landmarks = landmarks_string.split(", ")
+    mean_init, cov_init = compute_normals_stats(right, canal)
+    print("Landmarks", landmarks)
+    print("Improvement:", np.linalg.det(cov_init)/var)
+    visualise_canal_planes(right, canal, landmarks)
+
+
 
 def visualise_subject_planes(subject):
     all_lines = []
