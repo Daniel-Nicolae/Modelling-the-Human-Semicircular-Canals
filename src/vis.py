@@ -28,7 +28,7 @@ def visualise_canal_planes(subjects, canal, landmarks=None):
     offset = np.zeros(3)
     for i, subject in enumerate(subjects):
         vals, vecs, vertices = get_canal_plane(subject, canal, landmarks)
-        if vecs[:, 0].dot(np.array([1, 1, 1])) >= 0: vecs[:, 0] *= -1
+        # if vecs[:, 0].dot(np.array([1, 1, 1])) >= 0: vecs[:, 0] *= -1
         offset += 20*vals[0]*vecs[:, 0]
 
         canal_mesh = o3d.geometry.PointCloud()

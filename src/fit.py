@@ -29,6 +29,9 @@ def rotate_vertices(vertices, matrix):
         vertices_transformed[i] = matrix.dot(vertex)
     return vertices_transformed
 
+def rotate_vector(vector, matrix):
+    return matrix.dot(vector)
+
 
 def transform_mesh(mesh, matrix):
     mesh_transformed = copy.deepcopy(mesh)
@@ -41,13 +44,21 @@ def get_canal_plane(subject, canal, landmarks=None):
     vertices = get_canal_vertices(subject, canal)
     vertices -= np.mean(vertices, axis=0)
 
-    if landmarks is not None:
-        rotation_matrix = get_rotation_matrix(subject, landmarks)
-        vertices = rotate_vertices(vertices, rotation_matrix)
-
     covariance_matrix = np.zeros((3, 3))
     for vertex in vertices:
         covariance_matrix += np.outer(vertex, vertex)
     covariance_matrix /= (len(vertices)-1)
     vals, vecs = np.linalg.eigh(covariance_matrix)
+
+    # flip standardisation
+    if canal == "lateral":
+        if vecs[2, 0] < 0: vecs[:, 0] *= -1
+    else:
+        if vecs[0, 0] < 0: vecs[:, 0] *= -1
+
+    if landmarks is not None:
+        rotation_matrix = get_rotation_matrix(subject, landmarks)
+        for i in range(3):
+            vecs[:, i] = rotate_vector(vecs[:, i], rotation_matrix)
+
     return vals, vecs, vertices
