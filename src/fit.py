@@ -60,5 +60,6 @@ def get_canal_plane(subject, canal, landmarks=None):
         rotation_matrix = get_rotation_matrix(subject, landmarks)
         for i in range(3):
             vecs[:, i] = rotate_vector(vecs[:, i], rotation_matrix)
+        vertices = rotate_vertices(vertices, rotation_matrix)
 
     return vals, vecs, vertices
