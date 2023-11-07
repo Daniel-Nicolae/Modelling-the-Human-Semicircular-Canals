@@ -6,6 +6,8 @@ The code makes significant use of the [Open3D](http://www.open3d.org/docs/releas
 
 ### Code structure
 
+The code of the project can be found in the ```src``` folder. 
+
 1. ```meshes.py``` contains some basic functions for reading meshes.
 2. ```landmarks.py``` is used in ```init.py``` to extract external landmarks from the ```.ply``` and ```.sw``` files.
 3. ```segmentations.py``` contains all the functions that break down the otic capsule into its subparts.
