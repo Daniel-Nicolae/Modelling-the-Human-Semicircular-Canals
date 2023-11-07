@@ -33,7 +33,7 @@ def rotate_vector(vector, matrix):
     return matrix.dot(vector)
 
 
-def transform_mesh(mesh, matrix):
+def rotate_mesh(mesh, matrix):
     mesh_transformed = copy.deepcopy(mesh)
     vertices = np.array(mesh_transformed.vertices)
     mesh_transformed.vertices = o3d.utility.Vector3dVector(rotate_vertices(vertices, matrix))
