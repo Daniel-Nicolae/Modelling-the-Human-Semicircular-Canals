@@ -21,7 +21,7 @@ def compute_segments_dict(save_pickle=False):
     return segments_dict
 
 def load_segments_dict():
-    with open('../segments_dict.pickle', 'rb') as handle:
+    with open('../pickles/segments_dict.pickle', 'rb') as handle:
         segments_dict = pickle.load(handle)
     return segments_dict
 

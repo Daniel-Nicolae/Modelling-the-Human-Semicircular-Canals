@@ -118,8 +118,8 @@ def compute_fiducials_dicts(visible=True, restrict_ear=False, save_pickle=False)
     return results_dict, min_fids_dict, min_vars_dict
 
 def load_fiducials_dicts(visible):
-    if visible: filename = "../fiducials_dicts_visible.pickle"
-    else: filename = "../fiducials_dicts_full.pickle"
+    if visible: filename = "../pickles/fiducials_dicts_visible.pickle"
+    else: filename = "../pickles/fiducials_dicts_full.pickle"
     with open(filename, 'rb') as handle:
         dict_tuple = pickle.load(handle)
     return dict_tuple
