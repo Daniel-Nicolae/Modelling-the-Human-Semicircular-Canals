@@ -14,24 +14,29 @@ def compute_segments_dict(save_pickle=False):
         segments_dict["triangles"][key] = []
 
     vertex_colours = np.array(mesh.vertex_colors)
+    # From the original indices to the new indices in the sub-mesh
+    vertex_dict = {}
+    for key in col_dict.keys():
+        vertex_dict[key] = {}
 
     # Vertices extraction
     for i, colour in enumerate(vertex_colours):
         for key in col_dict.keys():
             if np.linalg.norm(colour - np.array(col_dict[key])) < 1e-5:
                 segments_dict["vertices"][key].append(i)
+                vertex_dict[key][i] = len(segments_dict["vertices"][key]) - 1
 
     # Triangles extraction
     all_triangles = np.array(mesh.triangles)
     triangles = []
-    for i, triangle in enumerate(all_triangles):
+    for triangle in all_triangles:
         for key in col_dict.keys():
-            if np.linalg.norm(vertex_colours[triangle[0]] - np.array(col_dict[key])) < 1e-5:
-                segments_dict["triangles"][key].append(i)
-    
-    if save_pickle:
-        with open('../pickles/segments_dict.pickle', 'wb') as handle:
-            pickle.dump(segments_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            if triangle[0] in vertex_dict[key] and triangle[1] in vertex_dict[key] and triangle[2] in vertex_dict[key]:
+                new_triangle = [vertex_dict[key][triangle[0]], vertex_dict[key][triangle[1]], vertex_dict[key][triangle[2]]]
+                segments_dict["triangles"][key].append(new_triangle)
+
+    with open('../pickles/segments_dict.pickle', 'wb') as handle:
+        pickle.dump(segments_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return segments_dict
 
 def load_segments_dict():
@@ -55,18 +60,24 @@ def get_canal_mesh(subject, canal):
     if subject == 13: mesh.vertices = o3d.utility.Vector3dVector(flip_left(mesh))
     segments_dict = load_segments_dict()
     if canal == "anterior":
-        vertex_indices = segments_dict["vertices"]["anterior"] + segments_dict["vertices"]["anterior-posterior"]
-        triangle_indices = segments_dict["triangles"]["anterior"] + segments_dict["triangles"]["anterior-posterior"]
+        vertices = np.array(mesh.vertices)[segments_dict["vertices"]["anterior"]]
+        offset = len(vertices) 
+        vertices = np.concatenate((vertices, np.array(mesh.vertices)[segments_dict["vertices"]["anterior-posterior"]]))
+        triangles = np.array(segments_dict["triangles"]["anterior"])
+        triangles = np.concatenate((triangles, (np.array(segments_dict["triangles"]["anterior-posterior"]) + offset)))
     elif canal == "posterior":
-        vertex_indices = segments_dict["vertices"]["posterior"] + segments_dict["vertices"]["anterior-posterior"]
-        triangle_indices = segments_dict["triangles"]["posterior"] + segments_dict["triangles"]["anterior-posterior"]
+        vertices = np.array(mesh.vertices)[segments_dict["vertices"]["posterior"]]
+        offset = len(vertices) 
+        vertices = np.concatenate((vertices, np.array(mesh.vertices)[segments_dict["vertices"]["anterior-posterior"]]))
+        triangles = np.array(segments_dict["triangles"]["posterior"])
+        triangles = np.concatenate((triangles, (np.array(segments_dict["triangles"]["anterior-posterior"]) + offset)))
     elif canal == "lateral":
-        vertex_indices = segments_dict["vertices"]["lateral"]
-        triangle_indices = segments_dict["triangles"]["lateral"]
+        vertices = np.array(mesh.vertices)[segments_dict["vertices"]["lateral"]]
+        triangles = segments_dict["triangles"]["lateral"]
     else:
         raise ValueError("The canal can be either anterior, posterior or lateral. Canal "+canal+" is not a valid canal!")
     
-    return np.array(mesh.vertices)[vertex_indices], np.array(mesh.triangles)[vertex_indices]
+    return vertices, triangles
 
 
 
