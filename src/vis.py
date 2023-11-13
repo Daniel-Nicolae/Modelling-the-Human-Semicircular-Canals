@@ -71,7 +71,7 @@ def visualise_subject_planes(subject):
     for canal in ["anterior", "posterior", "lateral"]:
 
         vals, vecs, _ = get_canal_plane(subject, canal) 
-        canal_centroid = np.mean(get_canal_vertices(subject, canal), axis=0)
+        canal_centroid = np.mean(get_canal_mesh(subject, canal)[0], axis=0)
 
         lines = o3d.geometry.LineSet()
         a = vecs[:, 2]*np.sqrt(vals[2])*2 # "major semiaxis"

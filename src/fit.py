@@ -41,7 +41,7 @@ def rotate_mesh(mesh, matrix):
 
 
 def get_canal_plane(subject, canal, landmarks=None):
-    vertices = get_canal_vertices(subject, canal)
+    vertices, triangles = get_canal_mesh(subject, canal)
     vertices -= np.mean(vertices, axis=0)
 
     covariance_matrix = np.zeros((3, 3))
