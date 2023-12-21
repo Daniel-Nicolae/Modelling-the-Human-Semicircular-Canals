@@ -64,13 +64,13 @@ def get_canal_mesh(subject, canal):
         offset = len(vertices) 
         vertices = np.concatenate((vertices, np.array(mesh.vertices)[segments_dict["vertices"]["anterior-posterior"]]))
         triangles = np.array(segments_dict["triangles"]["anterior"])
-        triangles = np.concatenate((triangles, (np.array(segments_dict["triangles"]["anterior-posterior"]) + offset)))
+        # triangles = np.concatenate((triangles, (np.array(segments_dict["triangles"]["anterior-posterior"]) + offset)))
     elif canal == "posterior":
         vertices = np.array(mesh.vertices)[segments_dict["vertices"]["posterior"]]
         offset = len(vertices) 
         vertices = np.concatenate((vertices, np.array(mesh.vertices)[segments_dict["vertices"]["anterior-posterior"]]))
         triangles = np.array(segments_dict["triangles"]["posterior"])
-        triangles = np.concatenate((triangles, (np.array(segments_dict["triangles"]["anterior-posterior"]) + offset)))
+        # triangles = np.concatenate((triangles, (np.array(segments_dict["triangles"]["anterior-posterior"]) + offset)))
     elif canal == "lateral":
         vertices = np.array(mesh.vertices)[segments_dict["vertices"]["lateral"]]
         triangles = segments_dict["triangles"]["lateral"]
