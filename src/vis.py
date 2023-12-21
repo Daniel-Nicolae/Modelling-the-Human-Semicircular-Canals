@@ -113,3 +113,111 @@ def visualise_subject_planes(subject):
     mesh_coloured.compute_vertex_normals()
 
     o3d.visualization.draw_geometries([mesh_coloured, *all_lines])
+
+def visualise_variation_modes(subject, canal, save_screenshots=False):
+    evals, evecs = load_variation_modes(canal)
+    
+    canal_mesh = o3d.geometry.TriangleMesh()
+    v, t = get_canal_mesh(subject, canal)
+    canal_mesh.vertices = o3d.utility.Vector3dVector(v)
+    canal_mesh.triangles = o3d.utility.Vector3iVector(t)
+    canal_mesh.compute_vertex_normals()
+    canal_mesh.paint_uniform_color([0, 0.7, 1]) 
+
+    points_original = o3d.geometry.PointCloud()
+    points_original.points = o3d.utility.Vector3dVector(v)
+    points_original.paint_uniform_color([1, 0.7, 0]) 
+
+    mode_vertices = evecs[:, -1].reshape(len(v), 3)
+    step = np.sqrt(evals[-1])/100
+    step_count = 0
+
+    def set_mode_1(vis):
+        nonlocal mode_vertices, step
+        reset1()
+        mode_vertices = evecs[:, -1].reshape(len(v), 3)
+        step = np.sqrt(evals[-1])/100
+        reset2(vis)
+
+    def set_mode_2(vis):
+        nonlocal mode_vertices, step
+        reset1()
+        mode_vertices = evecs[:, -2].reshape(len(v), 3)
+        step = np.sqrt(evals[-2])/100
+        reset2(vis)
+
+    def set_mode_3(vis):
+        nonlocal mode_vertices, step
+        reset1()
+        mode_vertices = evecs[:, -3].reshape(len(v), 3)
+        step = np.sqrt(evals[-3])/100
+        reset2(vis)
+
+    def add_mode(vis):
+        nonlocal step_count
+        v = np.array(canal_mesh.vertices)
+        if step_count <= 100:
+            v += mode_vertices*step
+            step_count += 1
+            if save_screenshots and step_count % 3 == 0: screenshot(vis)
+            canal_mesh.vertices = o3d.utility.Vector3dVector(v)
+            canal_mesh.compute_vertex_normals()
+            vis.update_geometry(canal_mesh)
+            vis.update_renderer()
+            vis.poll_events()
+            vis.run()
+
+    def subtract_mode(vis):
+        nonlocal step_count
+        v = np.array(canal_mesh.vertices)
+        if step_count >= -100:
+            v -= mode_vertices*step
+            step_count -= 1
+            if save_screenshots and step_count % 3 == 0: screenshot(vis)
+            canal_mesh.vertices = o3d.utility.Vector3dVector(v)
+            canal_mesh.compute_vertex_normals()
+            vis.update_geometry(canal_mesh)
+            vis.update_renderer()
+            vis.poll_events()
+            vis.run()
+
+    def reset1():
+        nonlocal step_count
+        v = np.array(canal_mesh.vertices)
+        v -= mode_vertices*step*step_count
+        step_count = 0
+        canal_mesh.vertices = o3d.utility.Vector3dVector(v)
+        canal_mesh.compute_vertex_normals()
+
+    def reset2(vis):
+        vis.update_geometry(canal_mesh)
+        vis.update_renderer()
+        vis.poll_events()
+        vis.run()
+
+    def reset(vis):
+        reset1()
+        reset2(vis)
+
+    ss_count=0
+    def screenshot(vis):
+        nonlocal ss_count
+        ss_count += 1
+        vis.capture_screen_image("{}.png".format(ss_count), do_render=False)
+
+    vis = o3d.visualization.VisualizerWithKeyCallback()
+    vis.create_window()
+    vis.add_geometry(canal_mesh)
+    vis.add_geometry(points_original)
+
+    vis.register_key_callback(ord("A"), add_mode)
+    vis.register_key_callback(ord("D"), subtract_mode)
+    vis.register_key_callback(ord("F"), reset)
+    vis.register_key_callback(49, set_mode_1)
+    vis.register_key_callback(50, set_mode_2)
+    vis.register_key_callback(51, set_mode_3)
+    vis.register_key_callback(ord("W"), screenshot)
+
+    vis.get_render_option().mesh_show_back_face = True
+    vis.run()
+    vis.destroy_window()
