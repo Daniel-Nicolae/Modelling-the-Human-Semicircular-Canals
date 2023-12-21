@@ -8,5 +8,6 @@ images
 # CT data - not public
 cochlea_data/Subject*
 cochlea_data/*.xlsx
+.DS_Store
 
 

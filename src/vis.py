@@ -5,6 +5,20 @@ from fit import *
 def visualise_meshes(meshes):
     o3d.visualization.draw_geometries(meshes, mesh_show_back_face=True)
 
+def visualise_vertices(vertices, has_color=False):
+    vertices -= np.mean(vertices, axis=0)
+    cloud = o3d.geometry.PointCloud()
+    cloud.points = o3d.utility.Vector3dVector(vertices)
+    if not has_color: cloud.paint_uniform_color([1, 0.7, 0]) 
+    o3d.visualization.draw_geometries([cloud])
+
+def visualise_canal_mesh(subject, canal):
+    vertices, triangles = get_canal_mesh(subject, canal)
+    canal_mesh = o3d.geometry.TriangleMesh()
+    canal_mesh.vertices = o3d.utility.Vector3dVector(vertices)
+    canal_mesh.triangles = o3d.utility.Vector3iVector(triangles)
+    canal_mesh.compute_vertex_normals()
+    visualise_meshes([canal_mesh])
 
 def visualise_segmented_subjects(subjects):
     if type(subjects) == int: subjects = [subjects]
