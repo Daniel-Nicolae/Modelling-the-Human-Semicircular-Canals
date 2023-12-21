@@ -152,7 +152,7 @@ def compute_fiducials_dicts(visible=True, restrict_ear=True, save_pickle=False, 
             pickle.dump((results_dict, min_fids_dict, min_angs_dict, kept_dict), handle, protocol=pickle.HIGHEST_PROTOCOL)
     return results_dict, min_fids_dict, min_angs_dict
 
-def load_fiducials_dicts(visible):
+def load_fiducials_dicts(visible=True):
     if visible: filename = "../pickles/fiducials_dicts_visible.pickle"
     else: filename = "../pickles/fiducials_dicts_full.pickle"
     with open(filename, 'rb') as handle:

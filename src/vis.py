@@ -1,5 +1,5 @@
 from segmentations import *
-from fit import *
+from variations import *
 
 
 def visualise_meshes(meshes):
