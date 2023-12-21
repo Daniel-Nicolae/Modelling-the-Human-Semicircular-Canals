@@ -12,9 +12,9 @@ def get_rotation_matrix(subject, landmarks):
         if landmarks[i] not in landmarks_dict.keys():
             raise ValueError(landmarks[i] + " is not a valid landmark!")
         
-    A = np.array(landmarks_dict[landmarks[0]])
-    B = np.array(landmarks_dict[landmarks[1]])
-    C = np.array(landmarks_dict[landmarks[2]])
+    A = np.array(landmarks_dict[landmarks[0]])*100
+    B = np.array(landmarks_dict[landmarks[1]])*100
+    C = np.array(landmarks_dict[landmarks[2]])*100
 
     x = (B-A)/np.linalg.norm(B-A)
     y = (C-A) - (C-A).dot(x) * x
