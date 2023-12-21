@@ -34,7 +34,10 @@ def visualise_segmented_subjects(subjects):
     visualise_meshes(meshes)
 
 
-def visualise_canal_planes(subjects, canal, landmarks=None):
+def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, verbose=False):
+    if filter: subjects = get_subjects_having_landmarks(subjects, landmarks)
+    if verbose: print("Subjects shown (green to blue):", subjects)
+
     all_lines = []
     all_canal_meshes = []
     colour_step = 1.0/len(subjects)
@@ -42,7 +45,6 @@ def visualise_canal_planes(subjects, canal, landmarks=None):
     offset = np.zeros(3)
     for i, subject in enumerate(subjects):
         vals, vecs, vertices = get_canal_plane(subject, canal, landmarks)
-        # if vecs[:, 0].dot(np.array([1, 1, 1])) >= 0: vecs[:, 0] *= -1
         offset += 20*vals[0]*vecs[:, 0]
 
         canal_mesh = o3d.geometry.PointCloud()
@@ -66,17 +68,24 @@ def visualise_canal_planes(subjects, canal, landmarks=None):
     o3d.visualization.draw_geometries([*all_canal_meshes, *all_lines])
 
 
-def best_alignment(canal, visible=True, all=False):
+def best_alignment(subjects, canal, mode, visible=True, all=False, verbose=False):
     if all: key = "all"
     else: key = canal
-    results, fids, vars = load_fiducials_dicts(visible)
-    var = vars[key]
-    landmarks_string = fids[key]
-    landmarks = landmarks_string.split(", ")
-    mean_init, cov_init = compute_normals_stats(right, canal)
-    print("Landmarks", landmarks)
-    print("Improvement:", np.linalg.det(cov_init)/var)
-    visualise_canal_planes(right, canal, landmarks)
+    results_dict, best_fiducials, best_angles, kept_dict = load_fiducials_dicts(visible)
+    best_landmarks = get_landmarks_from_key(best_fiducials[key][mode])
+    kept = get_subjects_having_landmarks(subjects, best_landmarks)
+
+    mean_ang, max_ang = results_dict[best_fiducials[key][mode]][key]
+    mean_init, cov_init, mean_ang_init, max_ang_init = compute_normals_stats(kept, canal)
+    
+    if verbose: 
+        print("Canal {}".format(canal))
+        print("Subjects shown (green to blue):", kept)
+        print("Best landmarks", best_landmarks)
+        print("Spread before (mean, max):", mean_ang_init*180/np.pi, max_ang_init*180/np.pi)
+        print("Spread after (mean, max):", mean_ang*180/np.pi, max_ang*180/np.pi)
+        print("Improvement:", (mean_ang_init-mean_ang)/mean_ang_init, (max_ang_init-max_ang)/max_ang_init)
+    visualise_canal_planes(kept, canal, best_landmarks)
 
 
 
