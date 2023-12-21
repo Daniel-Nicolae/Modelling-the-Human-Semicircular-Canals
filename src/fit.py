@@ -75,9 +75,12 @@ def compute_normals_stats(subjects, canal, landmarks=None):
     normals = compute_normals(subjects, canal, landmarks)
     sample_cov = np.zeros((3, 3))
     mean_normal = np.mean(normals, axis = 0)
+    angles = []
     for normal in normals:
         sample_cov += np.outer(normal-mean_normal, normal-mean_normal)
+        angles.append(np.arccos(np.dot(mean_normal, normal)))
     return mean_normal, sample_cov / (len(subjects) - 1)
+    return mean_normal, sample_cov / (len(subjects) - 1), np.mean(angles), np.max(angles)
 
 def compute_fiducials_dicts(visible=True, restrict_ear=False, save_pickle=False):
     landmarks = ["right soft anterior", "right soft posterior", "nasion", "right top orbit", "right bottom orbit"]
