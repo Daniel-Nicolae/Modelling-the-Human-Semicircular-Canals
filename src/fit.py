@@ -2,8 +2,8 @@ from segmentations import *
 from landmarks import *
 import copy
 
-left = [13]
-right = [3, 4, 6, 7, 8, 9, 10, 11, 14, 15, 17, 18, 20, 21, 22, 23, 24]
+left = [13, 52]
+right = [i for i in range(1, 54) if i not in left + [46, 48]]
 
 def get_rotation_matrix(subject, landmarks):
     if len(landmarks) != 3: raise ValueError("Must pass 3 landmarks")
@@ -64,6 +64,17 @@ def get_canal_plane(subject, canal, landmarks=None):
 
     return vals, vecs, vertices
 
+def get_subjects_having_landmarks(subjects, landmarks):
+    kept = []
+    if landmarks is None or len(landmarks) == 0: return subjects
+    for subject in subjects:
+        keep = 1
+        landmarks_dict = get_landmarks_from_ply(subject)
+        for landmark in landmarks:
+            if landmark not in landmarks_dict.keys(): keep = 0
+        if keep: kept.append(subject)
+    return kept
+
 def compute_normals(subjects, canal, landmarks=None):
     normals = []
     for subject in subjects:
@@ -71,7 +82,8 @@ def compute_normals(subjects, canal, landmarks=None):
         normals.append(vecs[:, 0])
     return np.array(normals)
 
-def compute_normals_stats(subjects, canal, landmarks=None):
+def compute_normals_stats(subjects, canal, landmarks=None, verbose=False, filter=False):
+    if filter: subjects = get_subjects_having_landmarks(subjects, landmarks)
     normals = compute_normals(subjects, canal, landmarks)
     sample_cov = np.zeros((3, 3))
     mean_normal = np.mean(normals, axis = 0)
@@ -79,46 +91,66 @@ def compute_normals_stats(subjects, canal, landmarks=None):
     for normal in normals:
         sample_cov += np.outer(normal-mean_normal, normal-mean_normal)
         angles.append(np.arccos(np.dot(mean_normal, normal)))
-    return mean_normal, sample_cov / (len(subjects) - 1)
+    if verbose: print("Canal {}. Landmarks {}. Used {} subjects: {}".format(canal, landmarks, len(subjects), subjects))
     return mean_normal, sample_cov / (len(subjects) - 1), np.mean(angles), np.max(angles)
 
-def compute_fiducials_dicts(visible=True, restrict_ear=False, save_pickle=False):
-    landmarks = ["right soft anterior", "right soft posterior", "nasion", "right top orbit", "right bottom orbit"]
+def compute_fiducials_dicts(visible=True, restrict_ear=True, save_pickle=False, verbose=False):
+    landmarks = ["right soft anterior", "right soft posterior", "nasion", "right top orbit", "right bottom orbit",
+                 "left soft anterior", "left soft posterior", "occiput", "septum", "left top orbit", "left bottom orbit"]
+
     if visible:
-        filename = "fiducials_dicts_visible.pickle"
+        filename = "../pickles/fiducials_dicts_visible.pickle"
     else:
-        filename = "fiducials_dicts_full.pickle"
+        filename = "../piclkes/fiducials_dicts_full.pickle"
         landmarks += ["right bony anterior", "right bony posterior"]
     N = len(landmarks)
-    min_vars_dict = {"anterior": 1, "lateral": 1, "posterior": 1, "all": 3}
-    min_fids_dict = {"anterior": "name", "lateral": "name", "posterior": "name", "all": "name"}
+    min_angs_dict = {"anterior": [10, 10], "lateral": [10, 10], "posterior": [10, 10], "all": [30, 30]}
+    min_fids_dict = {"anterior": ["name", "name"], "lateral": ["name", "name"], "posterior": ["name", "name"], "all": ["name", "name"]}
     results_dict = {}
+
+    kept_dict = {}
+
+    # Iterate through all fiducials
     for i in range(N):
         A = landmarks[i]
         for j in range(i + 1, N):
             B = landmarks[j]
             for k in range(j + 1, N):
                 C = landmarks[k]
-                for pair in [[A, B, C], [B, C, A], [C, A, B]]:
-                    if restrict_ear and "right soft anterior" in pair and "right soft posterior" in pair: break
+
+                # For every set of 3 there are three distinct coordinate systems possible
+                for p, triplet in enumerate([[A, B, C], [B, C, A], [C, A, B]]):
+
+                    # Filter out problematic triplets
+                    if "occiput" in triplet and "septum" in triplet: break
+                    if restrict_ear and "right soft anterior" in triplet and "right soft posterior" in triplet: break
+
                     key = A + ", " + B + ", " + C
                     results_dict[key] = {}
-                    var_sum = 0
+                    ang_sum = [0, 0]
+
+                    # Filter out subjects without desired fiducials
+                    if p == 0:
+                        subjects_kept = get_subjects_having_landmarks(right, triplet)
+                        kept_dict[key] = len(subjects_kept)
                     for canal in ["anterior", "posterior", "lateral"]:
-                        mean, cov = compute_normals_stats(right, canal, pair)
-                        var =  np.linalg.det(cov)
-                        results_dict[key][canal] = var
-                        if var < min_vars_dict[canal]: 
-                            min_fids_dict[canal] = key
-                            min_vars_dict[canal] = var
-                        var_sum += var
-                    if var_sum < min_vars_dict["all"]: 
-                        min_fids_dict["all"] = key
-                        min_vars_dict["all"] = var
+                        mean, cov, ang_mean, ang_max = compute_normals_stats(subjects_kept, canal, triplet, verbose=verbose)
+                        results_dict[key][canal] = [ang_mean, ang_max]
+
+                    # Find l-2 and l-inf optima
+                        for l, ang in zip([0, 1], [ang_mean, ang_max]):
+                            if ang < min_angs_dict[canal][l]: 
+                                min_fids_dict[canal][l] = key
+                                min_angs_dict[canal][l] = ang
+                            ang_sum[l] += ang
+                    for l, sum in zip([0, 1], ang_sum):
+                        if sum/len(subjects_kept) < min_angs_dict["all"][l]: 
+                            min_fids_dict["all"][l] = key
+                            min_angs_dict["all"][l] = sum/len(subjects_kept)
     if save_pickle:
         with open(filename, 'wb') as handle:
-            pickle.dump((results_dict, min_fids_dict, min_vars_dict), handle, protocol=pickle.HIGHEST_PROTOCOL)
-    return results_dict, min_fids_dict, min_vars_dict
+            pickle.dump((results_dict, min_fids_dict, min_angs_dict, kept_dict), handle, protocol=pickle.HIGHEST_PROTOCOL)
+    return results_dict, min_fids_dict, min_angs_dict
 
 def load_fiducials_dicts(visible):
     if visible: filename = "../pickles/fiducials_dicts_visible.pickle"
@@ -126,3 +158,6 @@ def load_fiducials_dicts(visible):
     with open(filename, 'rb') as handle:
         dict_tuple = pickle.load(handle)
     return dict_tuple
+
+def get_landmarks_from_key(key):
+    return key.split(", ")

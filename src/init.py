@@ -3,7 +3,7 @@ from segmentations import compute_segments_dict
 from fit import compute_fiducials_dicts
 
 
-for i in range(1, 25):
+for i in range(1, 54):
     copy_landmarks(i)
 
 compute_segments_dict(save_pickle=True)
