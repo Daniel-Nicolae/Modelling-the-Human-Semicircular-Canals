@@ -24,10 +24,7 @@ def get_rotation_matrix(subject, landmarks):
     return np.array([x, y, z])
 
 def rotate_vertices(vertices, matrix):
-    vertices_transformed = np.zeros(vertices.shape)
-    for i, vertex in enumerate(vertices):
-        vertices_transformed[i] = matrix.dot(vertex)
-    return vertices_transformed
+    return np.tensordot(matrix, vertices.T, axes=1)
 
 def rotate_vector(vector, matrix):
     return matrix.dot(vector)
