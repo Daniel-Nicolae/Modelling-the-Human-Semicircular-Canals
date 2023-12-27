@@ -71,20 +71,20 @@ def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, verbos
 def best_alignment(subjects, canal, mode, visible=True, all=False, verbose=False):
     if all: key = "all"
     else: key = canal
-    results_dict, best_fiducials, best_angles, kept_dict = load_fiducials_dicts(visible)
-    best_landmarks = get_landmarks_from_key(best_fiducials[key][mode])
+    results_dict, best_fids_dict, best_angles, best_improvs, kept_dict = load_fiducials_dicts(visible)
+    best_landmarks = get_landmarks_from_key(best_fids_dict[key][mode])
     kept = get_subjects_having_landmarks(subjects, best_landmarks)
 
-    mean_ang, max_ang = results_dict[best_fiducials[key][mode]][key]
+    mean_ang, improvement = results_dict[best_fids_dict[key][mode]][key]
     mean_init, cov_init, mean_ang_init, max_ang_init = compute_normals_stats(kept, canal)
     
     if verbose: 
         print("Canal {}".format(canal))
         print("Subjects shown (green to blue):", kept)
         print("Best landmarks", best_landmarks)
-        print("Spread before (mean, max):", mean_ang_init*180/np.pi, max_ang_init*180/np.pi)
-        print("Spread after (mean, max):", mean_ang*180/np.pi, max_ang*180/np.pi)
-        print("Improvement:", (mean_ang_init-mean_ang)/mean_ang_init, (max_ang_init-max_ang)/max_ang_init)
+        print("Spread before:", mean_ang_init)
+        print("Spread after:", mean_ang)
+        print("Improvement:", improvement)
     visualise_canal_planes(kept, canal, best_landmarks)
 
 
