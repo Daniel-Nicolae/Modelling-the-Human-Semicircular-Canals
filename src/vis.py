@@ -129,34 +129,34 @@ def visualise_variation_modes(subject, canal, save_screenshots=False):
     points_original.paint_uniform_color([1, 0.7, 0]) 
 
     mode_vertices = evecs[:, -1].reshape(len(v), 3)
-    step = np.sqrt(evals[-1])/100
+    step = np.sqrt(evals[-1])/25
     step_count = 0
 
     def set_mode_1(vis):
         nonlocal mode_vertices, step
         reset1()
         mode_vertices = evecs[:, -1].reshape(len(v), 3)
-        step = np.sqrt(evals[-1])/100
+        step = np.sqrt(evals[-1])/25
         reset2(vis)
 
     def set_mode_2(vis):
         nonlocal mode_vertices, step
         reset1()
         mode_vertices = evecs[:, -2].reshape(len(v), 3)
-        step = np.sqrt(evals[-2])/100
+        step = np.sqrt(evals[-2])/25
         reset2(vis)
 
     def set_mode_3(vis):
         nonlocal mode_vertices, step
         reset1()
         mode_vertices = evecs[:, -3].reshape(len(v), 3)
-        step = np.sqrt(evals[-3])/100
+        step = np.sqrt(evals[-3])/25
         reset2(vis)
 
     def add_mode(vis):
         nonlocal step_count
         v = np.array(canal_mesh.vertices)
-        if step_count <= 100:
+        if step_count <= 50:
             v += mode_vertices*step
             step_count += 1
             if save_screenshots and step_count % 3 == 0: screenshot(vis)
@@ -170,7 +170,7 @@ def visualise_variation_modes(subject, canal, save_screenshots=False):
     def subtract_mode(vis):
         nonlocal step_count
         v = np.array(canal_mesh.vertices)
-        if step_count >= -100:
+        if step_count >= -50:
             v -= mode_vertices*step
             step_count -= 1
             if save_screenshots and step_count % 3 == 0: screenshot(vis)
