@@ -4,22 +4,23 @@ def compute_variation_modes(subjects, canal, fiducials=None, mode=0, save_pickle
     if fiducials is None:
         results_dict, fiducials_dict, best_angles, best_improvs, kept_dict = load_fiducials_dicts(visible=True)
         fiducials = get_landmarks_from_key(fiducials_dict[canal][mode])
-    vertices, t = get_canal_mesh(subjects[0], canal)
+    kept = get_subjects_having_landmarks(subjects, fiducials)
+    vertices, t = get_canal_mesh(kept[0], canal)
     sample_cov = np.zeros((len(vertices)*3, len(vertices)*3))
     mean_vertices = np.zeros(len(vertices)*3)
-    for subject in subjects:
+    for subject in kept:
         vertices, t = get_canal_mesh(subject, canal)
         rotation = get_rotation_matrix(subject, fiducials)
         vertices = rotate_vertices(vertices-np.mean(vertices, axis=0), rotation)
         mean_vertices += vertices.reshape(vertices.shape[0] * 3)
-    mean_vertices /= len(subjects)
-    for subject in subjects:
+    mean_vertices /= len(kept)
+    for subject in kept:
         vertices, t = get_canal_mesh(subject, canal)
         rotation = get_rotation_matrix(subject, fiducials)
         vertices = rotate_vertices(vertices-np.mean(vertices, axis=0), rotation)
         vertices = vertices.reshape(vertices.shape[0] * 3)
         sample_cov += np.outer(vertices - mean_vertices, vertices - mean_vertices)
-    sample_cov /= len(subjects) - 1
+    sample_cov /= len(kept) - 1
     evals, evecs = np.linalg.eigh(sample_cov)
 
     if save_pickle:
