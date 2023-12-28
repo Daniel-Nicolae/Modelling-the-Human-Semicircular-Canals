@@ -158,6 +158,30 @@ def compute_fiducials_dicts(visible=True, restrict_ear=True, save_pickle=False, 
             pickle.dump((results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict), handle, protocol=pickle.HIGHEST_PROTOCOL)
     return results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict
 
+def correct_fiducials_dicts(visible=True, save_pickle=False):
+    results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict = load_fiducials_dicts(visible)
+
+    min_angs_dict = {"anterior": 100, "lateral": 100, "posterior": 100, "all": 100}
+    max_improvs_dict = {"anterior": 0, "lateral": 0, "posterior": 0, "all": 0}
+    best_fids_dict = {"anterior": ["name", "name"], "lateral": ["name", "name"], "posterior": ["name", "name"], "all": ["name", "name"]}
+
+    for key in results_dict:
+        if kept_dict[key] > 25: 
+            for canal in ["anterior", "posterior", "lateral"]:
+                if results_dict[key][canal][0] < min_angs_dict[canal]:
+                    min_angs_dict[canal] = results_dict[key][canal][0]
+                    best_fids_dict[canal][0] = key
+                if results_dict[key][canal][1] > max_improvs_dict[canal]:
+                    max_improvs_dict[canal] = results_dict[key][canal][1]
+                    best_fids_dict[canal][1] = key
+
+    if save_pickle:
+        if visible: filename = "../pickles/fiducials_dicts_visible.pickle"
+        else: filename = "../piclkes/fiducials_dicts_full.pickle"
+        with open(filename, 'wb') as handle:
+            pickle.dump((results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict), handle, protocol=pickle.HIGHEST_PROTOCOL)
+    return results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict
+
 def load_fiducials_dicts(visible=True):
     if visible: filename = "../pickles/fiducials_dicts_visible.pickle"
     else: filename = "../pickles/fiducials_dicts_full.pickle"
