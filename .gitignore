@@ -10,7 +10,3 @@ part II*
 cochlea_data/Subject*
 cochlea_data/*.xlsx
 .DS_Store
-
-# experiments notebook
-*.ipynb
-
