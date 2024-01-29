@@ -1,13 +1,16 @@
 # cache
 __pycache__
 
-# misc folders
+# other folders
 misc
 images
+part II*
 
 # CT data - not public
 cochlea_data/Subject*
 cochlea_data/*.xlsx
 .DS_Store
 
+# experiments notebook
+*.ipynb
 
