@@ -1,20 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  SafeAreaView,
+  Text,
+} from 'react-native';
+import styles from './styles'
+import ButtonColumn from './components/ButtonColumn';
 
-export default function App() {
+const App = () => {
+
+  const Separator = () => <View style={styles.separator} />
+
+  const handlePressCanal = (canal: string) => setAffectedCanal(canal);
+  const handlePressEar = (ear: string) => setAffectedEar(ear);
+
+  const [affectedCanal, setAffectedCanal] = useState("")
+  const [affectedEar, setAffectedEar] = useState("")
+
+  const canals: string[] = ["Anterior", "Posterior", "Lateral"]
+  const ears: string[] = ["Left", "Right"]
+  
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={styles.globalContainer}>
+    <SafeAreaView style={styles.container}>
+      <ButtonColumn buttonLabels={canals} onPressButton={handlePressCanal}/>
+      <Separator />
+      <ButtonColumn buttonLabels={ears} onPressButton={handlePressEar}/>
+      <Text style={styles.text}>{affectedEar + " " + affectedCanal}</Text>
+    </SafeAreaView>
     </View>
   );
-}
+  };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
