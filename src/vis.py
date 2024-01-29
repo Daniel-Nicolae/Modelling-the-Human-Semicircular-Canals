@@ -13,11 +13,13 @@ def visualise_vertices(vertices, has_color=False):
     o3d.visualization.draw_geometries([cloud])
 
 def visualise_canal_mesh(subject, canal):
+    col_dict = {"anterior": [0, 1.0, 0], "posterior": [0, 0.23, 1], "lateral": [0.5, 0.5, 1]}
     vertices, triangles = get_canal_mesh(subject, canal)
     canal_mesh = o3d.geometry.TriangleMesh()
     canal_mesh.vertices = o3d.utility.Vector3dVector(vertices)
     canal_mesh.triangles = o3d.utility.Vector3iVector(triangles)
     canal_mesh.compute_vertex_normals()
+    canal_mesh.paint_uniform_color(col_dict[canal])
     visualise_meshes([canal_mesh])
 
 def visualise_segmented_subjects(subjects):
