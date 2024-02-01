@@ -1,12 +1,12 @@
 import { Button, View, Text } from "react-native";
+
 import styles from "../styles";
+import Separator from "./Separator";
 
 interface Props {
     buttonLabels: string[]
     onPressButton: (canal: string) => void
 }
-
-const Separator = () => <View style={styles.separator} />
 
 function ButtonColumn ({buttonLabels, onPressButton}: Props) {
     const colours: string[] = ["#dd6666", "#66dd66", "#6666dd"]
@@ -14,11 +14,10 @@ function ButtonColumn ({buttonLabels, onPressButton}: Props) {
         <>
             {buttonLabels.map((item, index) => (
                 <>
-                <Button key={item} title={item} color={colours[index]} onPress={() => onPressButton(item)} />
-                <Separator key={item+10}/>
+                <Button title={item} color={colours[index]} onPress={() => onPressButton(item)}/>
+                <Separator space={8}/>
                 </>
             ))}
-            
         </>
     );
 }

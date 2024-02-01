@@ -11,13 +11,10 @@ const styles = StyleSheet.create({
       marginHorizontal: 16,
       marginVertical: 100,
     },
-    text: {
+    title: {
       textAlign: "center",
       fontSize: 20,
       color: "#eeeeee"
-    },
-    separator: {
-      marginVertical: 8
     }
   });
 
