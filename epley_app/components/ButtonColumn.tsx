@@ -12,10 +12,10 @@ function ButtonColumn ({buttonLabels, onPressButton}: Props) {
     return (
         <>
             {buttonLabels.map((item, index) => (
-                <>
+                <View key={index}>
                 <Button title={item} color={colours[index]} onPress={() => onPressButton(item)}/>
                 <Separator space={8}/>
-                </>
+                </View>
             ))}
         </>
     );
