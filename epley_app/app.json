@@ -1,5 +1,6 @@
 {
   "expo": {
+    "jsEngine": "jsc",
     "name": "epley_app",
     "slug": "epley_app",
     "version": "1.0.0",
