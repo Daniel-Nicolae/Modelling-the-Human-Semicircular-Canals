@@ -3,7 +3,9 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
     globalContainer:{
       flex: 1,
-      backgroundColor: "#555555"
+      backgroundColor: "#555555",
+      justifyContent: 'center',
+      alignItems: "center"
     },
     container: {
       flex: 1,

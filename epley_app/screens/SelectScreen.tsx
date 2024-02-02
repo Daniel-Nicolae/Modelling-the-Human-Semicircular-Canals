@@ -42,7 +42,6 @@ function SelectScreen ({navigation}) {
                 <View style={{width: 150, height:150, alignSelf: "center"}}>
                     <Button title="Next" color="#e3e311" onPress={handleNext}/>
                 </View>
-
             </SafeAreaView>
     );
 }
