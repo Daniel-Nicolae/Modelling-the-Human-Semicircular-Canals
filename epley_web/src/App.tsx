@@ -12,15 +12,13 @@ import Separator from './components/Separator';
 const App = () => {
 
   const [cameraActive, setCameraActive] = useState(false)
-  const [modelActive, setModelActive] = useState(false)
   const handleCameraActive = () => setCameraActive(true)
-  const handleModelActive = () => setModelActive(true)
 
   return (
     <div>
       <SelectScreen onNext={handleCameraActive}/>
       <Separator space={100}/>
-      <CameraScreen active={cameraActive} onNext={handleModelActive}/>
+      {cameraActive && <CameraScreen/>}
     </div>
   );
   };

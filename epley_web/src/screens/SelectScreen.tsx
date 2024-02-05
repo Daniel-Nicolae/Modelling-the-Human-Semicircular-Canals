@@ -31,7 +31,7 @@ function SelectScreen ({onNext}: Props) {
 
     return ( 
         <div>
-            <p>Welcome to the Epley guidance app! Please select the affected canal.</p>
+            <h3>Welcome to the Epley guidance app! Please select the affected canal.</h3>
             <Separator space={8}/>
             <ButtonColumn buttonLabels={canals} onPressButton={handlePressCanal}/>
             <Separator space={8}/>
