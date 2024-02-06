@@ -3,7 +3,11 @@ import Webcam from "react-webcam"
 
 import { runDetector } from "../components/model";
 
-function CameraScreen () {
+interface Props {
+    onNext: () => void
+}
+
+function CameraScreen ({onNext}: Props) {
 
     // const webcamRef = useRef(null);
     const inputResolution = {
@@ -32,7 +36,7 @@ function CameraScreen () {
             <p>Make sure you can see your face clearly.</p>
             <Webcam videoConstraints={videoConstraints} mirrored={true} onLoadedData={handleVideoLoad}/>
             <p/>
-            <button type="button" className="btn btn-primary" onClick={() => console.log("TODO")}>Draw Canal</button>
+            <button type="button" className="btn btn-primary" onClick={onNext}>Draw Canal</button>
         </div>
     );
 }

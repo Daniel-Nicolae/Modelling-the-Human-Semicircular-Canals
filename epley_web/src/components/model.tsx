@@ -18,7 +18,7 @@ export const runDetector = async (video: HTMLVideoElement) => {
     const detect = async (detector: FaceLandmarksDetector) => {
         const estimationConfig = { flipHorizontal: false };
         const faces = await detector.estimateFaces(video, estimationConfig);
-        console.log(faces)
+        // console.log(faces)
     };
     const modelLoop = setInterval(detect, 1000, detector);
   };
