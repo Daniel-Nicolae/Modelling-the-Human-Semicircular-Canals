@@ -4,7 +4,7 @@ import '@mediapipe/face_mesh';
 import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
 import { MediaPipeFaceMeshMediaPipeModelConfig, FaceLandmarksDetector } from "@tensorflow-models/face-landmarks-detection";
 
-export const runDetector = async (video: HTMLVideoElement) => {
+export const runDetector = async (video: HTMLVideoElement, callback: (landmarks: faceLandmarksDetection.Keypoint[]) => void) => {
     const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
     const detectorConfig: MediaPipeFaceMeshMediaPipeModelConfig = {
         runtime: "mediapipe",
@@ -16,9 +16,9 @@ export const runDetector = async (video: HTMLVideoElement) => {
         detectorConfig
     );
     const detect = async (detector: FaceLandmarksDetector) => {
-        const estimationConfig = { flipHorizontal: false };
+        const estimationConfig = { flipHorizontal: true };
         const faces = await detector.estimateFaces(video, estimationConfig);
-        // console.log(faces)
+        if (faces.length !== 0) callback(faces[0].keypoints)
     };
-    const modelLoop = setInterval(detect, 1000, detector);
+    const modelLoop = setInterval(detect, 20, detector);
   };

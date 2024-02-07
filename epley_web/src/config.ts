@@ -1,0 +1,1 @@
+export const videoSize = {width: 640, height: 480}

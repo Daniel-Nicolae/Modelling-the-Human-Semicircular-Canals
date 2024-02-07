@@ -4,7 +4,7 @@ import SelectScreen from './screens/SelectScreen';
 import CameraScreen from './screens/CameraScreen';
 import Separator from './components/Separator';
 import GraphicsScreen from './screens/GraphicsScreen';
-
+import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 
 const App = () => {
 
@@ -13,13 +13,16 @@ const App = () => {
   const handleCameraActive = () => setCameraActive(true)
   const handleGraphicsActive = () => setGraphicsActive(true)
 
+  const [landmarks, setLandmarks] = useState<Keypoint[]>([])
+
+
   return (
     <div>
       <SelectScreen onNext={handleCameraActive}/>
       <Separator space={100}/>
-      {cameraActive && <CameraScreen onNext={handleGraphicsActive}/>}
+      {cameraActive && <CameraScreen onNext={handleGraphicsActive} onDetection={setLandmarks}/>}
       <Separator space={100}/>
-      {graphicsActive && <GraphicsScreen/>}
+      {graphicsActive && <GraphicsScreen landmarks={landmarks}/>}
     </div>
   );
   };
