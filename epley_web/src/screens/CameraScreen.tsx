@@ -4,7 +4,7 @@ import Webcam from "react-webcam"
 
 import { runDetector } from "../components/model";
 import { videoSize } from "../config";
-import { drawFaceMesh } from "../graphics/FaceMesh";
+import { drawFaceMesh } from "../facemesh/FaceMesh";
 
 interface Props {
     onNext: () => void
