@@ -1,33 +1,18 @@
-import * as THREE from "three"
+import { useEffect } from "react";
+import * as THREE from "three";
+import { getFaceMesh } from "../graphics/FaceMesh";
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
-import FaceTesselation from "./FaceTesselation";
 import { videoSize } from "../config";
 
-export const getFaceMesh = (landmarks: Keypoint[], mode: string) => {
-    const vertices: THREE.Vector3[] = []
-    landmarks.map((item, index) => {
-        if (mode === "o")
-            {vertices.push(new THREE.Vector3(item.x/videoSize.width*2-1, -item.y/videoSize.height*2+1, -10))}
-        if (mode === "p")
-            {vertices.push(new THREE.Vector3(item.x-videoSize.width/2, -item.y+videoSize.height/2, item.z ? item.z-530 : -10))}
-    })
-
-    const geometry = new THREE.WireframeGeometry().setFromPoints(vertices)
-    geometry.setIndex(FaceTesselation)
-
-    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true} );
-    const mesh = new THREE.Mesh( geometry, material );
-    return mesh
+interface Props {
+    landmarks: Keypoint[] 
 }
 
-export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[], cameraMode: string) => {
-    if (canvas) {
-        // var ctx = canvas.getContext('2d')!;
-        // ctx.rect(0, 0, 100, 100);
-        // ctx.lineWidth = 6;
-        // ctx.strokeStyle = "red";
-        // ctx.stroke();
+const cameraMode = "o"
 
+const FaceMeshCanvas = ({landmarks}: Props) => {
+    useEffect(() => {
+        // Scene initialisation
         const scene = new THREE.Scene()
 
         // Camera initialisation
@@ -38,13 +23,14 @@ export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[], c
                 camera.bottom = videoSize.height/2; camera.top = videoSize.height/2;
                 return camera
             } else {
-                const camera = new THREE.PerspectiveCamera(50, videoSize.width/videoSize.height)
+                const camera = new THREE.PerspectiveCamera(50)
                 return camera
             }
         }
         const camera = initialiseCamera(cameraMode)
 
         // Renderer
+        const canvas = document.getElementById("canalCanvas") as HTMLCanvasElement
         const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true})
         renderer.setSize(videoSize.width, videoSize.height)
         document.body.appendChild(renderer.domElement)
@@ -66,6 +52,14 @@ export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[], c
         }
         animate()
 
+    }, [landmarks])
 
-    }
+    return (
+        <canvas id="canalCanvas" style={{
+                position: "absolute", 
+                top: 0, left: 0, 
+                width: videoSize.width, height: videoSize.height}}/>
+    );
 }
+
+export default FaceMeshCanvas

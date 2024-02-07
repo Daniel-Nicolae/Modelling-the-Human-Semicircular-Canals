@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import * as THREE from "three";
-import FaceMesh from "../graphics/FaceMesh";
+import { getFaceMesh } from "../graphics/FaceMesh";
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 import { videoSize } from "../config";
 
@@ -40,22 +40,12 @@ const GraphicsScreen = ({landmarks}: Props) => {
         ambientLight.castShadow = true
         scene.add(ambientLight)
 
-        // Content
-        // const boxGeometry = new THREE.BoxGeometry()
-        // const boxMaterial = new THREE.MeshNormalMaterial()
-        // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
-        // boxMesh.position.set(0, 0, -100)
-        // scene.add(boxMesh)
-
         if (landmarks.length !== 0) {
-            const mesh = FaceMesh(landmarks, cameraMode)
+            const mesh = getFaceMesh(landmarks, cameraMode)
             scene.add(mesh)
         }
 
         const animate = () => {
-            // boxMesh.rotation.x += 0.01
-            // boxMesh.rotation.y += 0.01
-            // boxMesh.rotation.z += 0.01
             renderer.render(scene, camera)
             window.requestAnimationFrame(animate)
         }
