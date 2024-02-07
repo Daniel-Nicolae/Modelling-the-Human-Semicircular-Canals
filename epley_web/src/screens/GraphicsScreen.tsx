@@ -1,29 +1,29 @@
 import { useEffect } from "react";
 import * as THREE from "three";
-import { getFaceMesh } from "../graphics/FaceMesh";
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
-import { videoSize } from "../config";
+import { graphicsSize } from "../config";
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
 
 interface Props {
-    landmarks: Keypoint[] 
+    landmarks: Keypoint[]
 }
 
-const cameraMode = "o"
-
+const cameraMode = "p"
 const GraphicsScreen = ({landmarks}: Props) => {
     useEffect(() => {
         // Scene initialisation
         const scene = new THREE.Scene()
+        scene.background = new THREE.Color( 0x72645b );
 
         // Camera initialisation
         const initialiseCamera = (cameraMode: string) => {
             if (cameraMode === "o") {
                 const camera = new THREE.OrthographicCamera()
-                camera.left = -videoSize.width/2; camera.right = videoSize.width/2;
-                camera.bottom = videoSize.height/2; camera.top = videoSize.height/2;
+                camera.left = -graphicsSize.width/2; camera.right = graphicsSize.width/2;
+                camera.bottom = graphicsSize.height/2; camera.top = graphicsSize.height/2;
                 return camera
             } else {
-                const camera = new THREE.PerspectiveCamera(50)
+                const camera = new THREE.PerspectiveCamera(50, graphicsSize.width/graphicsSize.height)
                 return camera
             }
         }
@@ -32,7 +32,7 @@ const GraphicsScreen = ({landmarks}: Props) => {
         // Renderer
         const canvas = document.getElementById("canalCanvas") as HTMLCanvasElement
         const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true})
-        renderer.setSize(videoSize.width, videoSize.height)
+        renderer.setSize(graphicsSize.width, graphicsSize.height)
         document.body.appendChild(renderer.domElement)
     
         // Lights
@@ -40,18 +40,51 @@ const GraphicsScreen = ({landmarks}: Props) => {
         ambientLight.castShadow = true
         scene.add(ambientLight)
 
-        if (landmarks.length !== 0) {
-            const mesh = getFaceMesh(landmarks, cameraMode)
+        const pointLight = new THREE.PointLight(0xffffff, 1000)
+        pointLight.castShadow = true
+        camera.add(pointLight);
+        scene.add(camera)
+
+
+        // Ground
+        const plane = new THREE.Mesh(
+            new THREE.PlaneGeometry(4000, 4000),
+            new THREE.MeshStandardMaterial({color: 0xcbcbcb})
+        );
+        plane.rotation.x = - Math.PI / 2;
+        plane.position.y = - 5;
+        scene.add(plane);
+        plane.receiveShadow = true;
+
+
+        const loader = new PLYLoader()
+        let canalMesh: THREE.Mesh
+        loader.load("canonical_coloured.ply", (geometry) => {
+            const vertexColors = geometry.attributes.color
+            console.log(geometry)
+            geometry.computeVertexNormals();
+            const material = new THREE.MeshStandardMaterial({vertexColors: true, flatShading: true})
+            const mesh = new THREE.Mesh(geometry, material);
+
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            mesh.position.set(0, 0, -25)
             scene.add(mesh)
-        }
+            canalMesh = mesh
+        })
 
         const animate = () => {
+            // canalMesh.rotation.z += 0.01
+            const timer = Date.now() * 0.0001;
+            camera.position.x = Math.sin(timer) * 25 + 7;
+            camera.position.z = Math.cos(timer) * 25 - 25;
+            camera.lookAt(new THREE.Vector3(7, 8, -25));
             renderer.render(scene, camera)
             window.requestAnimationFrame(animate)
         }
         animate()
 
-    }, [landmarks])
+    }, [])
 
     return (
         <div>
