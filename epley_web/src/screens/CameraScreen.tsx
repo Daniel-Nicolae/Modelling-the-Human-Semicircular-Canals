@@ -7,11 +7,10 @@ import { videoSize } from "../config";
 import { drawFaceMesh } from "../facemesh/FaceMesh";
 
 interface Props {
-    onNext: () => void
     onDetection: (landmarks: Keypoint[]) => void
 }
 
-function CameraScreen ({onNext, onDetection}: Props) {
+function CameraScreen ({onDetection}: Props) {
       
     const videoConstraints = {
         width: videoSize.width,
@@ -53,8 +52,6 @@ function CameraScreen ({onNext, onDetection}: Props) {
                         top: 495, left: 0, 
                         width: videoSize.width, height: videoSize.height}}/>
             </div>
-            <p/>
-            <button type="button" className="btn btn-primary" onClick={onNext} style={{marginTop: videoSize.height + 20}}>Draw Canal</button>
         </div>
     );
 }

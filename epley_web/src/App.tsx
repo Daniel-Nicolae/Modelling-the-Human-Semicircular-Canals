@@ -5,22 +5,30 @@ import CameraScreen from './screens/CameraScreen';
 import Separator from './components/Separator';
 import GraphicsScreen from './screens/GraphicsScreen';
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
+import { videoSize } from './config';
 
 const App = () => {
 
   const [cameraActive, setCameraActive] = useState(false)
   const [graphicsActive, setGraphicsActive] = useState(false)
-  const handleCameraActive = () => setCameraActive(true)
-  const handleGraphicsActive = () => setGraphicsActive(true)
 
   const [landmarks, setLandmarks] = useState<Keypoint[]>([])
 
+  const [affectedCanal, setAffectedCanal] = useState("")
+  const [affectedEar, setAffectedEar] = useState("")  
 
   return (
     <div>
-      <SelectScreen onNext={handleCameraActive}/>
+      <h3>Welcome to the Epley guidance app! Please select the affected canal.</h3>
+      <SelectScreen canalCallback={setAffectedCanal} earCallback={setAffectedEar}/>
+      <p>{affectedEar + " " + affectedCanal}</p>
+      <Separator space={20}/>
+      <button className="btn btn-warning" onClick={() => {if (affectedCanal && affectedEar) setCameraActive(true)}}>Open Camera</button>
       <Separator space={100}/>
-      {cameraActive && <CameraScreen onNext={handleGraphicsActive} onDetection={setLandmarks}/>}
+      {cameraActive && <CameraScreen onDetection={setLandmarks}/>}
+      {cameraActive && <button  type="button" className="btn btn-primary" 
+                                onClick={() => setGraphicsActive(true)}
+                                style={{marginTop: videoSize.height + 20}}>Draw Canal</button>}
       <Separator space={100}/>
       {graphicsActive && <GraphicsScreen landmarks={landmarks}/>}
     </div>

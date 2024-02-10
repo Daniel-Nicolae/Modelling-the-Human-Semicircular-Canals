@@ -4,58 +4,33 @@ import ButtonColumn from "../components/ButtonColumn";
 import Separator from "../components/Separator";
 
 interface Props {
-    onNext: () => void
+    canalCallback: (canal: string) => void
+    earCallback: (ear: string) => void
 }
 
-function SelectScreen ({onNext}: Props) {
+function SelectScreen ({canalCallback, earCallback}: Props) {
     // const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
 
     const handlePressCanal = (event: MouseEvent) => {
         const target = event.target as HTMLButtonElement;
-        setAffectedCanal(target.value);
+        canalCallback(target.value);
     }
     const handlePressEar = (event: MouseEvent) => {
         const target = event.target as HTMLButtonElement;
-        setAffectedEar(target.value);
+        earCallback(target.value);
     }
-    const handleNext = (event: MouseEvent) => {
-        if (affectedCanal && affectedEar) onNext()
-    };
-
-
-    const [affectedCanal, setAffectedCanal] = useState("")
-    const [affectedEar, setAffectedEar] = useState("")  
 
     const canals: string[] = ["Anterior", "Posterior", "Lateral"]
     const ears: string[] = ["Left", "Right"]
 
     return ( 
         <div>
-            <h3>Welcome to the Epley guidance app! Please select the affected canal.</h3>
             <Separator space={8}/>
             <ButtonColumn buttonLabels={canals} onPressButton={handlePressCanal}/>
             <Separator space={8}/>
             <ButtonColumn buttonLabels={ears} onPressButton={handlePressEar}/>
-            <p>{affectedEar + " " + affectedCanal}</p>
-            <Separator space={20}/>
-            <button className="btn btn-warning" onClick={handleNext}>Next</button>
         </div>
-            // <SafeAreaView style={styles.globalContainer}>
-            //     <View style={styles.container}>
-            //     <Text style={styles.title}>
-            //         Welcome to the Epley guidance app! Please select the affected canal.
-            //     </Text> 
-            //     <Separator space={8}/>
-            //     <ButtonColumn buttonLabels={canals} onPressButton={handlePressCanal}/>
-            //     <Separator space={8}/>
-            //     <ButtonColumn buttonLabels={ears} onPressButton={handlePressEar}/>
-            //     <Text style={styles.title}>{affectedEar + " " + affectedCanal}</Text>
-            //     </View>
-            //     <View style={{width: 150, height:150, alignSelf: "center"}}>
-            //         <Button title="Next" color="#e3e311" onPress={handleNext}/>
-            //     </View>
-            // </SafeAreaView>
-    );
+    )
 }
 
 export default SelectScreen;
