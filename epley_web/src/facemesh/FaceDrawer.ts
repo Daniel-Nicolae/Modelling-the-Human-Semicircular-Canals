@@ -22,12 +22,6 @@ export const getFaceMesh = (landmarks: Keypoint[], mode: string) => {
 
 export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[], cameraMode: string) => {
     if (canvas) {
-        // var ctx = canvas.getContext('2d')!;
-        // ctx.rect(0, 0, 100, 100);
-        // ctx.lineWidth = 6;
-        // ctx.strokeStyle = "red";
-        // ctx.stroke();
-
         const scene = new THREE.Scene()
 
         // Camera initialisation

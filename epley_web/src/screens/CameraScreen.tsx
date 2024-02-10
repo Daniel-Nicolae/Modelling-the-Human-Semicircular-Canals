@@ -2,15 +2,15 @@ import { ReactEventHandler, SyntheticEvent, useEffect, useRef, useState } from "
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 import Webcam from "react-webcam"
 
-import { runDetector } from "../components/model";
+import { runDetector } from "../facemesh/FaceModel";
 import { videoSize } from "../config";
-import { drawFaceMesh } from "../facemesh/FaceMesh";
+import { drawFaceMesh } from "../facemesh/FaceDrawer";
 
 interface Props {
-    onDetection: (landmarks: Keypoint[]) => void
+    landmarksCallback: (landmarks: Keypoint[]) => void
 }
 
-function CameraScreen ({onDetection}: Props) {
+function CameraScreen ({landmarksCallback}: Props) {
       
     const videoConstraints = {
         width: videoSize.width,
@@ -29,7 +29,7 @@ function CameraScreen ({onDetection}: Props) {
     };
 
     useEffect(() => {
-        onDetection(landmarks)
+        landmarksCallback(landmarks)
         const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
         drawFaceMesh(canvas, landmarks, "o")
     }, [landmarks])

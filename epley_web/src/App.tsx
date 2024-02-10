@@ -25,7 +25,7 @@ const App = () => {
       <Separator space={20}/>
       <button className="btn btn-warning" onClick={() => {if (affectedCanal && affectedEar) setCameraActive(true)}}>Open Camera</button>
       <Separator space={100}/>
-      {cameraActive && <CameraScreen onDetection={setLandmarks}/>}
+      {cameraActive && <CameraScreen landmarksCallback={setLandmarks}/>}
       {cameraActive && <button  type="button" className="btn btn-primary" 
                                 onClick={() => setGraphicsActive(true)}
                                 style={{marginTop: videoSize.height + 20}}>Draw Canal</button>}
