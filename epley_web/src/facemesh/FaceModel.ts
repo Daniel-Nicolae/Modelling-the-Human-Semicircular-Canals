@@ -20,5 +20,5 @@ export const runDetector = async (video: HTMLVideoElement, callback: (landmarks:
         const faces = await detector.estimateFaces(video, estimationConfig);
         if (faces.length !== 0) callback(faces[0].keypoints)
     };
-    const modelLoop = setInterval(detect, 20, detector);
+    const modelLoop = setInterval(detect, 40, detector);
   };

@@ -28,28 +28,24 @@ function CameraScreen ({landmarksCallback}: Props) {
         setLoaded(true);
     };
 
+    const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
     useEffect(() => {
         landmarksCallback(landmarks)
-        const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
-        drawFaceMesh(canvas, landmarks, "o")
+        drawFaceMesh(canvas, landmarks)
     }, [landmarks])
-
-    const webcamRef = useRef<Webcam>(null);
 
     return (
         <div style={{position: "relative"}}>
-            <p>Make sure you can see your face clearly.</p>
             <div>
                 <Webcam 
-                    ref={webcamRef}
                     videoConstraints={videoConstraints} 
                     mirrored={true} 
                     onLoadedData={handleVideoLoad}
-                    style={{position: "absolute", top: 30, left: 0}}
+                    style={{position: "absolute", top: 0, left: 0}}
                 />
                 <canvas id="faceMeshCanvas" style={{
                         position: "absolute", 
-                        top: 495, left: 0, 
+                        top: 0, left: 0, 
                         width: videoSize.width, height: videoSize.height}}/>
             </div>
         </div>

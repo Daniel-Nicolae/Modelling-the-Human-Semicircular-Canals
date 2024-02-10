@@ -36,11 +36,11 @@ const GraphicsScreen = ({landmarks}: Props) => {
         document.body.appendChild(renderer.domElement)
     
         // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2)
         ambientLight.castShadow = true
         scene.add(ambientLight)
 
-        const pointLight = new THREE.PointLight(0xffffff, 1000)
+        const pointLight = new THREE.PointLight(0xffffff, 700)
         pointLight.castShadow = true
         camera.add(pointLight);
         scene.add(camera)
@@ -48,34 +48,31 @@ const GraphicsScreen = ({landmarks}: Props) => {
 
         // Ground
         const plane = new THREE.Mesh(
-            new THREE.PlaneGeometry(4000, 4000),
-            new THREE.MeshStandardMaterial({color: 0xcbcbcb})
+            new THREE.PlaneGeometry(100, 100),
+            new THREE.MeshStandardMaterial({color: 0xcbcbcb, flatShading: true})
         );
-        plane.rotation.x = - Math.PI / 2;
-        plane.position.y = - 5;
+        plane.rotation.x = -Math.PI/2;
+        plane.position.y = -1;
         scene.add(plane);
-        plane.receiveShadow = true;
 
 
         const loader = new PLYLoader()
         let canalMesh: THREE.Mesh
         loader.load("canonical_coloured.ply", (geometry) => {
-            const vertexColors = geometry.attributes.color
-            console.log(geometry)
-            geometry.computeVertexNormals();
-            const material = new THREE.MeshStandardMaterial({vertexColors: true, flatShading: true})
+            const material = new THREE.MeshStandardMaterial({vertexColors: true, roughness: 0.2})
             const mesh = new THREE.Mesh(geometry, material);
-
             mesh.castShadow = true;
             mesh.receiveShadow = true;
             mesh.position.set(0, 0, -25)
             scene.add(mesh)
             canalMesh = mesh
         })
+        
 
         const animate = () => {
             // canalMesh.rotation.z += 0.01
-            const timer = Date.now() * 0.0001;
+            const timer = Date.now() * 0.0005;
+            // scene.children[0].position.z = Math.sin(timer) * 25 + 7
             camera.position.x = Math.sin(timer) * 25 + 7;
             camera.position.z = Math.cos(timer) * 25 - 25;
             camera.lookAt(new THREE.Vector3(7, 8, -25));
@@ -84,7 +81,7 @@ const GraphicsScreen = ({landmarks}: Props) => {
         }
         animate()
 
-    }, [])
+    }, [landmarks])
 
     return (
         <div>

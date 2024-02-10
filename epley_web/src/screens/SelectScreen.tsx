@@ -9,8 +9,6 @@ interface Props {
 }
 
 function SelectScreen ({canalCallback, earCallback}: Props) {
-    // const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
-
     const handlePressCanal = (event: MouseEvent) => {
         const target = event.target as HTMLButtonElement;
         canalCallback(target.value);
