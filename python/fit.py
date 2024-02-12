@@ -209,3 +209,35 @@ def load_fiducials_dicts(visible=True):
 
 def get_landmarks_from_key(key):
     return key.split(", ")
+
+def get_canal_mean_mesh(subjects, canal, landmarks, full=True, save=False):
+
+    kept = get_subjects_having_landmarks(subjects, landmarks)
+    mean_vertices = np.zeros(get_canal_mesh(1, canal, full=full)[0].shape)
+    for subject in kept:
+        vertices = get_canal_mesh(subject, canal, full, True)[0] 
+        rotation_matrix = get_rotation_matrix(subject, landmarks)
+        vertices = rotate_vertices(vertices, rotation_matrix)
+        mean_vertices += vertices
+    mean_vertices /= len(kept)
+
+    mean_mesh = o3d.geometry.TriangleMesh()
+    mean_mesh.vertices = o3d.utility.Vector3dVector(mean_vertices)
+
+    segments_dict = load_segments_dict()
+    if canal in ["anterior", "posterior"] and full: canal += "-full"
+    triangles = segments_dict["triangles"][canal]
+    mean_mesh.triangles = o3d.utility.Vector3iVector(triangles)
+    mean_mesh.compute_vertex_normals()
+
+    if save:
+        if full and canal in ["anterior", "posterior"]: canal = canal[:-5]
+        path = "../meshes/{}_mesh.ply".format(canal)
+        o3d.io.write_triangle_mesh(path, mean_mesh)
+
+    return mean_mesh
+
+def get_best_canal_mean_mesh(subjects, canal, full=True, save=False):
+    results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict = load_fiducials_dicts()
+    best_landmarks = get_landmarks_from_key(best_fids_dict[canal][0])
+    return get_canal_mean_mesh(subjects, canal, best_landmarks, full, save)
