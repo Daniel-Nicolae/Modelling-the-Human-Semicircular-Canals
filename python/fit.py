@@ -50,17 +50,16 @@ def get_canal_plane(subject, canal, landmarks=None):
 
     # flip standardisation
     if canal == "lateral":
-        if vecs[2, 0] < 0: vecs[:, 0] *= -1
+        if vecs[2, 0] < 0: vecs[:, :] *= -1
     else:
-        if vecs[0, 0] < 0: vecs[:, 0] *= -1
+        if vecs[0, 0] < 0: vecs[:, :] *= -1
 
     if landmarks is not None:
         rotation_matrix = get_rotation_matrix(subject, landmarks)
         for i in range(3):
             vecs[:, i] = rotate_vector(vecs[:, i], rotation_matrix)
-        vertices = rotate_vertices(vertices, rotation_matrix)
 
-    return vals, vecs, vertices
+    return vals, vecs
 
 def get_subjects_having_landmarks(subjects, landmarks):
     kept = []
@@ -76,9 +75,22 @@ def get_subjects_having_landmarks(subjects, landmarks):
 def compute_normals(subjects, canal, landmarks=None):
     normals = []
     for subject in subjects:
-        vals, vecs, vertices = get_canal_plane(subject, canal, landmarks)
+        vals, vecs = get_canal_plane(subject, canal, landmarks)
         normals.append(vecs[:, 0])
     return np.array(normals)
+
+def compute_average_coord_system(subjects, canal, landmarks=None):
+    coord_systems = np.zeros((len(subjects), 3, 3))
+    for s, subject in enumerate(subjects):
+        vals, vecs = get_canal_plane(subject, "posterior", landmarks)
+        coord_systems[s, :, :] = vecs[:, :].T
+    return np.mean(coord_systems, axis=0)
+
+def get_best_coord_system(subjects, canal, visible=True):
+    results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict = load_fiducials_dicts(visible)
+    best_landmarks = get_landmarks_from_key(best_fids_dict[canal][0])
+    kept = get_subjects_having_landmarks(subjects, best_landmarks)
+    return compute_average_coord_system(kept, canal, best_landmarks)
 
 def compute_normals_stats(subjects, canal, landmarks=None, verbose=False, filter=False):
     if filter: subjects = get_subjects_having_landmarks(subjects, landmarks)

@@ -54,7 +54,7 @@ def colour_mesh(mesh):
     mesh.vertex_colors = o3d.utility.Vector3dVector(colours)
     return mesh 
 
-def get_canal_mesh(subject, canal):
+def get_canal_mesh(subject, canal, center=False):
     path = get_ply_path(subject)
     mesh = o3d.io.read_triangle_mesh(path)
     if subject == 13: mesh.vertices = o3d.utility.Vector3dVector(flip_left(mesh))
@@ -76,6 +76,7 @@ def get_canal_mesh(subject, canal):
         triangles = segments_dict["triangles"]["lateral"]
     else:
         raise ValueError("The canal can be either anterior, posterior or lateral. Canal "+canal+" is not a valid canal!")
+    if center: vertices -= np.mean(vertices, axis=0)
     
     return vertices, triangles
 

@@ -46,7 +46,11 @@ def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, verbos
 
     offset = np.zeros(3)
     for i, subject in enumerate(subjects):
-        vals, vecs, vertices = get_canal_plane(subject, canal, landmarks)
+        vals, vecs = get_canal_plane(subject, canal, landmarks)
+        vertices = get_canal_mesh(subject, canal, True)[0] 
+        if landmarks is not None:
+            rotation_matrix = get_rotation_matrix(subject, landmarks)
+            vertices = rotate_vertices(vertices, rotation_matrix)
         offset += 20*vals[0]*vecs[:, 0]
 
         canal_mesh = o3d.geometry.PointCloud()
@@ -95,7 +99,7 @@ def visualise_subject_planes(subject):
     all_lines = []
     for canal in ["anterior", "posterior", "lateral"]:
 
-        vals, vecs, _ = get_canal_plane(subject, canal) 
+        vals, vecs = get_canal_plane(subject, canal) 
         canal_centroid = np.mean(get_canal_mesh(subject, canal)[0], axis=0)
 
         lines = o3d.geometry.LineSet()
