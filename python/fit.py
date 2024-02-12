@@ -49,10 +49,16 @@ def get_canal_plane(subject, canal, landmarks=None):
     vals, vecs = np.linalg.eigh(covariance_matrix)
 
     # flip standardisation
+    if canal == "posterior":
+        if vecs[0, 0] < 0: vecs[:, 0] *= -1
+        if vecs[0, 1] < 0: vecs[:, 1] *= -1
+    if canal == "anterior":
+        if vecs[0, 0] < 0: vecs[:, 0] *= -1
+        if vecs[2, 1] < 0: vecs[:, 1] *= -1
     if canal == "lateral":
-        if vecs[2, 0] < 0: vecs[:, :] *= -1
-    else:
-        if vecs[0, 0] < 0: vecs[:, :] *= -1
+        if vecs[2, 0] < 0: vecs[:, 0] *= -1
+        if vecs[0, 1] > 0: vecs[:, 0] *= -1
+    vecs[:, 2] = np.cross(vecs[:, 0], vecs[:, 1])
 
     if landmarks is not None:
         rotation_matrix = get_rotation_matrix(subject, landmarks)
