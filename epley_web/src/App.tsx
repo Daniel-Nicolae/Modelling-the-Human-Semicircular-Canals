@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import SelectScreen from './screens/SelectScreen';
 import CameraScreen from './screens/CameraScreen';
@@ -12,7 +12,9 @@ const App = () => {
   const [cameraActive, setCameraActive] = useState(false)
   const [graphicsActive, setGraphicsActive] = useState(false)
 
-  const [landmarks, setLandmarks] = useState<Keypoint[]>([])
+  // const [landmarks, setLandmarks] = useState<Keypoint[]>([])
+  const landmarks = useRef<Keypoint[]>([])
+  const updateLandmarks = () => landmarks.current
 
   const [affectedCanal, setAffectedCanal] = useState("")
   const [affectedEar, setAffectedEar] = useState("")  
@@ -25,12 +27,12 @@ const App = () => {
       <Separator space={20}/>
       <button className="btn btn-warning" onClick={() => {if (affectedCanal && affectedEar) setCameraActive(true)}}>Open Camera</button>
       <Separator space={100}/>
-      {cameraActive && <CameraScreen landmarksCallback={setLandmarks}/>}
+      {cameraActive && <CameraScreen landmarksCallback={landmarks}/>}
       {cameraActive && <button  type="button" className="btn btn-primary" 
                                 onClick={() => setGraphicsActive(true)}
-                                style={{marginTop: videoSize.height + 20}}>Draw Canal</button>}
+                                style={{marginTop: videoSize.height + 20}}>Draw Canal</button> }
       <Separator space={100}/>
-      {graphicsActive && <GraphicsScreen landmarks={landmarks}/>}
+      {graphicsActive && <GraphicsScreen canal={affectedCanal} ear={affectedEar} landmarksCallback={updateLandmarks}/>}
     </div>
   );
   };

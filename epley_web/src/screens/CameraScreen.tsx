@@ -7,7 +7,8 @@ import { videoSize } from "../config";
 import { drawFaceMesh } from "../facemesh/FaceDrawer";
 
 interface Props {
-    landmarksCallback: (landmarks: Keypoint[]) => void
+    // landmarksCallback: (landmarks: Keypoint[]) => void
+    landmarksCallback: React.MutableRefObject<Keypoint[]>
 }
 
 function CameraScreen ({landmarksCallback}: Props) {
@@ -30,7 +31,8 @@ function CameraScreen ({landmarksCallback}: Props) {
 
     const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
     useEffect(() => {
-        landmarksCallback(landmarks)
+        // landmarksCallback(landmarks)
+        landmarksCallback.current = landmarks
         drawFaceMesh(canvas, landmarks)
     }, [landmarks])
 

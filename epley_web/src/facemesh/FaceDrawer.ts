@@ -5,38 +5,15 @@ import { videoSize } from "../config";
 
 
 export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[]) => {
-    // const scene = new THREE.Scene()
-
-    // // Camera initialisation
-    // const initialiseCamera = (cameraMode: string) => {
-    //     if (cameraMode === "o") {
-    //         const camera = new THREE.OrthographicCamera()
-    //         camera.left = -videoSize.width/2; camera.right = videoSize.width/2;
-    //         camera.bottom = videoSize.height/2; camera.top = videoSize.height/2;
-    //         return camera
-    //     } else {
-    //         const camera = new THREE.PerspectiveCamera(50, videoSize.width/videoSize.height)
-    //         return camera
-    //     }
-    // }
-    // const camera = initialiseCamera(cameraMode)
-
-    // // Renderer
-    // const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true})
-    // renderer.setSize(videoSize.width, videoSize.height)
-    // document.body.appendChild(renderer.domElement)
-
-    // if (landmarks.length !== 0) {
-    //     const mesh = getFaceMesh(landmarks, cameraMode)
-    //     scene.add(mesh)
-    // }
-    // renderer.setClearColor(0xffffff, 0);
-    // renderer.render(scene, camera)
     if (!canvas) return
     const ctx = canvas.getContext("2d")!
     ctx.canvas.width = videoSize.width
     ctx.canvas.height = videoSize.height
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    ctx.fillStyle = "red";
+    const lm = 22
+    ctx.fillRect(landmarks[lm].x, landmarks[lm].y, 3, 3);
 
     for (let i = 0; i < FaceTesselation.length / 3; i++) {
         const points = [
