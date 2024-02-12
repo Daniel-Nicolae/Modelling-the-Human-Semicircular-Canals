@@ -12,9 +12,8 @@ const App = () => {
   const [cameraActive, setCameraActive] = useState(false)
   const [graphicsActive, setGraphicsActive] = useState(false)
 
-  // const [landmarks, setLandmarks] = useState<Keypoint[]>([])
-  const landmarks = useRef<Keypoint[]>([])
-  const updateLandmarks = () => landmarks.current
+  const landmarksRef = useRef<Keypoint[]>([])
+  const getLandmarks = () => landmarksRef.current
 
   const [affectedCanal, setAffectedCanal] = useState("")
   const [affectedEar, setAffectedEar] = useState("")  
@@ -27,12 +26,12 @@ const App = () => {
       <Separator space={20}/>
       <button className="btn btn-warning" onClick={() => {if (affectedCanal && affectedEar) setCameraActive(true)}}>Open Camera</button>
       <Separator space={100}/>
-      {cameraActive && <CameraScreen landmarksCallback={landmarks}/>}
+      {cameraActive && <CameraScreen landmarksRef={landmarksRef}/>}
       {cameraActive && <button  type="button" className="btn btn-primary" 
                                 onClick={() => setGraphicsActive(true)}
                                 style={{marginTop: videoSize.height + 20}}>Draw Canal</button> }
       <Separator space={100}/>
-      {graphicsActive && <GraphicsScreen canal={affectedCanal} ear={affectedEar} landmarksCallback={updateLandmarks}/>}
+      {graphicsActive && <GraphicsScreen canal={affectedCanal} ear={affectedEar} landmarksCallback={getLandmarks}/>}
     </div>
   );
   };
