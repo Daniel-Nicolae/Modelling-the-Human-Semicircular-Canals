@@ -11,9 +11,12 @@ export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[]) =
     ctx.canvas.height = videoSize.height
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    ctx.fillStyle = "red";
-    const lm = 22
-    ctx.fillRect(landmarks[lm].x, landmarks[lm].y, 3, 3);
+    // ctx.font = "13px Arial";
+    // ctx.fillStyle = "red";
+    // ctx.textAlign = "center";
+    // landmarks.map((vertex, index) => {
+    //     ctx.fillText(index.toString(), vertex.x+10, vertex.y+10); 
+    // })
 
     for (let i = 0; i < FaceTesselation.length / 3; i++) {
         const points = [
