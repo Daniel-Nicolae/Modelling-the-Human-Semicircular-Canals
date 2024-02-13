@@ -19,20 +19,14 @@ function CameraScreen ({landmarksRef}: Props) {
     };
 
     const [loaded, setLoaded] = useState(false);
-    const [landmarks, setLandmarks] = useState<Keypoint[]>([])
     const handleVideoLoad = (videoNode: SyntheticEvent) => {
         const video = videoNode.target as HTMLVideoElement
         if (video.readyState !== 4) return;
         if (loaded) return;
-        runDetector(video, setLandmarks); //running detection on video
+        const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
+        runDetector(video, canvas, landmarksRef); //running detection on video
         setLoaded(true);
     };
-
-    const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
-    useEffect(() => {
-        landmarksRef.current = landmarks
-        drawFaceMesh(canvas, landmarks)
-    }, [landmarks])
 
     return (
         <div style={{position: "relative"}}>
