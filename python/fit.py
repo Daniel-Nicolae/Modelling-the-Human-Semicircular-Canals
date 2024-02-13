@@ -231,7 +231,7 @@ def get_canal_mean_mesh(subjects, canal, landmarks, full=True, save=False):
     mean_mesh.compute_vertex_normals()
 
     if save:
-        if full and canal in ["anterior", "posterior"]: canal = canal[:-5]
+        if full and canal[0] in ["a", "p"]: canal = canal[:-5]
         path = "../meshes/{}_mesh.ply".format(canal)
         o3d.io.write_triangle_mesh(path, mean_mesh)
 
