@@ -10,3 +10,6 @@ part II*
 cochlea_data/Subject*
 cochlea_data/*.xlsx
 .DS_Store
+
+# mean meshes - final ones copied in app's public
+meshes
