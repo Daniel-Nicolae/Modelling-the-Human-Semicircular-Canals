@@ -3,11 +3,12 @@ import * as THREE from "three";
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 import { graphicsSize, videoSize } from "../config";
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
+import getRotationMatrix from "../facemesh/getRotationMatrix";
 
 interface Props {
     landmarksCallback: () => Keypoint[]
-    canal: string
-    ear: string
+    canal: String
+    ear: String
 }
 
 const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
@@ -39,8 +40,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
             }
         }
         camera = initialiseCamera(cameraMode)
-        camera.position.y = 15
-        camera.lookAt(new THREE.Vector3(0, 10, -20))
+        camera.position.set(0, 0, 15)
 
         // Add lights
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.2)
@@ -59,12 +59,11 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
             geometry.computeVertexNormals()
             geometry.center()
 
-            const material = new THREE.MeshStandardMaterial({color: 0x009cff, roughness: 0.2})
+            const material = new THREE.MeshStandardMaterial({color: 0x009cff, roughness: 0.2, side: THREE.DoubleSide})
             const loadedMesh = new THREE.Mesh(geometry, material);
 
             loadedMesh.castShadow = true;
             loadedMesh.receiveShadow = true;
-            loadedMesh.position.set(0, 10, -20)
             mesh.current = loadedMesh
             scene.add(mesh.current)
         })
@@ -75,7 +74,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
             new THREE.MeshStandardMaterial({color: 0xcbcbcb, flatShading: true})
         );
         plane.rotation.x = -Math.PI/2;
-        plane.position.y = -1;
+        plane.position.y = -10;
         scene.add(plane);
 
         animate()
@@ -84,8 +83,12 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
     function animate() {
         requestAnimationFrame(animate);
         const landmarks = landmarksCallback()
-        if (mesh.current) mesh.current!.position.z = -landmarks[0].x/15
+        if (mesh.current) {
+            const rotationMatrix = getRotationMatrix(landmarks, ear, canal)
+            mesh.current!.applyMatrix4(rotationMatrix)
+        }
         renderer.render(scene, camera)
+        if (mesh.current) mesh.current.rotation.set(0, 0, 0)
     }
 
     

@@ -13,7 +13,13 @@ const App = () => {
   const [graphicsActive, setGraphicsActive] = useState(false)
 
   const landmarksRef = useRef<Keypoint[]>([])
-  const getLandmarks = () => landmarksRef.current
+  const getLandmarks = () => [landmarksRef.current[8], landmarksRef.current[230], landmarksRef.current[56],
+                              landmarksRef.current[450], landmarksRef.current[258]]
+  // Nasion: 8
+  // LBO: 230
+  // LTO: 56
+  // RBO: 450
+  // RTO: 258
 
   const [affectedCanal, setAffectedCanal] = useState("")
   const [affectedEar, setAffectedEar] = useState("")  
