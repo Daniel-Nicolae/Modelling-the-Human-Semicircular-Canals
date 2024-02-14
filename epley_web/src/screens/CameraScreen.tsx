@@ -18,13 +18,15 @@ function CameraScreen ({landmarksRef}: Props) {
         facingMode: "user",
     };
 
-    const [loaded, setLoaded] = useState(false);
+    const [loaded, setLoaded] = useState(false)
+    const meshActive = useRef(false)
+    const meshActiveCallback = () => meshActive.current
     const handleVideoLoad = (videoNode: SyntheticEvent) => {
         const video = videoNode.target as HTMLVideoElement
         if (video.readyState !== 4) return;
         if (loaded) return;
         const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
-        runDetector(video, canvas, landmarksRef); //running detection on video
+        runDetector(video, canvas, landmarksRef, meshActiveCallback); //running detection on video
         setLoaded(true);
     };
 
@@ -37,6 +39,10 @@ function CameraScreen ({landmarksRef}: Props) {
                     onLoadedData={handleVideoLoad}
                     style={{position: "absolute", top: 0, left: 0}}
                 />
+                <button  className="btn btn-warning" onClick={() => meshActive.current = !meshActive.current} 
+                         style={{position: 'absolute', top: videoSize.height + 10, left: 0}}>
+                    Toggle Face Mesh
+                </button> 
                 <canvas id="faceMeshCanvas" style={{
                         position: "absolute", 
                         top: 0, left: 0, 

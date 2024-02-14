@@ -5,7 +5,9 @@ import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detec
 import { MediaPipeFaceMeshMediaPipeModelConfig, FaceLandmarksDetector } from "@tensorflow-models/face-landmarks-detection";
 import { drawFaceMesh } from "./FaceDrawer";
 
-export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasElement, landmarksRef: React.MutableRefObject<faceLandmarksDetection.Keypoint[]>) => {
+export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasElement, 
+                                  landmarksRef: React.MutableRefObject<faceLandmarksDetection.Keypoint[]>, 
+                                  meshActiveCallback: () => boolean) => {
     const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
     const detectorConfig: MediaPipeFaceMeshMediaPipeModelConfig = {
         runtime: "mediapipe",
@@ -22,7 +24,9 @@ export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasEle
         if (faces.length !== 0) {
             // callback(faces[0].keypoints)
             landmarksRef.current = faces[0].keypoints
-            drawFaceMesh(canvas, faces[0].keypoints)
+            const ctx = canvas.getContext('2d');
+            ctx!.clearRect(0, 0, canvas.width, canvas.height);
+            if (meshActiveCallback()) drawFaceMesh(canvas, faces[0].keypoints)    
         }
     };
     const modelLoop = setInterval(detect, 20, detector)

@@ -35,7 +35,7 @@ const App = () => {
       {cameraActive && <CameraScreen landmarksRef={landmarksRef}/>}
       {cameraActive && <button  type="button" className="btn btn-primary" 
                                 onClick={() => setGraphicsActive(true)}
-                                style={{marginTop: videoSize.height + 20}}>Draw Canal</button> }
+                                style={{marginTop: videoSize.height + 50}}>Draw Canal</button> }
       <Separator space={100}/>
       {graphicsActive && <GraphicsScreen canal={affectedCanal} ear={affectedEar} landmarksCallback={getLandmarks}/>}
     </div>
