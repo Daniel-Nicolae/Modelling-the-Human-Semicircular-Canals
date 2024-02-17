@@ -9,9 +9,10 @@ interface Props {
     landmarksCallback: () => Keypoint[]
     canal: String
     ear: String
+    mirrored: boolean
 }
 
-const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
+const GraphicsScreen = ({landmarksCallback, ear, canal, mirrored}: Props) => {
     const cameraMode = "p"
     
     const camera = useRef<THREE.Camera>()
@@ -19,6 +20,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
     const renderer = useRef<THREE.WebGLRenderer>()
     const mesh = useRef<THREE.Mesh>()
     useEffect(() => {
+        const pi = Math.PI
         // Renderer initialisation
         const canvas = document.getElementById("canalCanvas") as HTMLCanvasElement
         renderer.current = new THREE.WebGLRenderer({canvas: canvas!, antialias: true})
@@ -42,32 +44,34 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
             }
         }
         camera.current = initialiseCamera(cameraMode)
-        camera.current.position.set(0, 0, 60)
+        camera.current.position.set(0, 0, 25)
+        camera.current.lookAt(0, 0, 0)
 
         // Add lights
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.2)
         ambientLight.castShadow = true
         scene.current.add(ambientLight)
 
-        const pointLight = new THREE.PointLight(0xffffff, 4000)
+        const pointLight = new THREE.PointLight(0xffffff, 1000)
         pointLight.castShadow = true
         camera.current.add(pointLight);
         scene.current.add(camera.current)
 
         // Load Canal Mesh
         const loader = new PLYLoader()
-        // const meshPath = canal + "_mesh.ply"
-        const meshPath = "capsule.ply"
+        const meshPath = canal + "_mesh.ply"
+        // const meshPath = "capsule.ply"
         loader.load(meshPath, (geometry) => {
             geometry.computeVertexNormals()
             geometry.center()
 
-            const material = new THREE.MeshStandardMaterial({color: 0x009cff, roughness: 0.2, side: THREE.DoubleSide})
+            const material = new THREE.MeshStandardMaterial({color: 0x009cff, side: THREE.DoubleSide})
             const loadedMesh = new THREE.Mesh(geometry, material);
 
             loadedMesh.castShadow = true;
             loadedMesh.receiveShadow = true;
             mesh.current = loadedMesh
+            if (mirrored && ear === "Right" || !mirrored && ear === "Left") mesh.current.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
             scene.current!.add(mesh.current)
         })
 
@@ -76,32 +80,30 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
             new THREE.PlaneGeometry(100, 100),
             new THREE.MeshStandardMaterial({color: 0xcbcbcb, flatShading: true})
         );
-        plane.rotation.x = -Math.PI/2;
+        plane.rotation.x = -pi/2;
         plane.position.y = -10;
         scene.current.add(plane);
 
-        const loop = animate() 
-        
+        let loop: number = requestAnimationFrame(animate)
+
+        function animate() {
+            const landmarks = landmarksCallback()
+            if (scene.current!.children.length === 5) scene.current!.children.splice(3, 1) // fix mesh added twice by the useEffect
+            if (mesh.current) {
+                mesh.current.rotation.set(pi, 0, 0)
+                const rotationMatrix = getRotationMatrix(landmarks, ear, canal)
+                mesh.current.applyMatrix4(rotationMatrix) 
+                renderer.current!.render(scene.current!, camera.current!)
+            }
+            loop = requestAnimationFrame(animate);
+        }
+
         return () => {
             cancelAnimationFrame(loop) 
             scene.current!.clear()
         }
-    }, [])
+    }, [ear, canal, mirrored])
    
-    const pi = Math.PI
-    function animate() {
-        const loop = requestAnimationFrame(animate);
-        const landmarks = landmarksCallback()
-        if (scene.current!.children.length === 5) scene.current!.children.splice(3, 1) // fix mesh added twice by the useEffect
-        if (mesh.current) {
-            mesh.current.rotation.set(0, 0, 0)
-            // mesh.current.rotation.y += Math.PI
-            const rotationMatrix = getRotationMatrix(landmarks, ear, canal)
-            mesh.current.applyMatrix4(rotationMatrix) 
-            renderer.current!.render(scene.current!, camera.current!)
-        }
-        return loop
-    }
     
 
     return (

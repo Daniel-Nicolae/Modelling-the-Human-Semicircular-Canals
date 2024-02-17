@@ -11,6 +11,7 @@ const App = () => {
 
   const [cameraActive, setCameraActive] = useState(false)
   const [graphicsActive, setGraphicsActive] = useState(false)
+  const [mirrored, setMirrored] = useState(true)
 
   const landmarksRef = useRef<Keypoint[]>([])
   const getLandmarks = () => [landmarksRef.current[8], landmarksRef.current[230], landmarksRef.current[56],
@@ -32,12 +33,11 @@ const App = () => {
       <Separator space={20}/>
       <button className="btn btn-warning" onClick={() => {if (affectedCanal && affectedEar) setCameraActive(true)}}>Open Camera</button>
       <Separator space={100}/>
-      {cameraActive && <CameraScreen landmarksRef={landmarksRef}/>}
-      {cameraActive && <button  type="button" className="btn btn-primary" 
-                                onClick={() => setGraphicsActive(true)}
-                                style={{marginTop: videoSize.height + 50}}>Draw Canal</button> }
+      {cameraActive && <CameraScreen landmarksRef={landmarksRef} mirrored={mirrored} setMirrored={setMirrored}/>}
+      {cameraActive && <button  className="btn btn-primary" 
+                                onClick={() => setGraphicsActive(true)}>Draw Canal</button> }
       <Separator space={100}/>
-      {graphicsActive && <GraphicsScreen canal={affectedCanal} ear={affectedEar} landmarksCallback={getLandmarks}/>}
+      {graphicsActive && <GraphicsScreen canal={affectedCanal} ear={affectedEar} landmarksCallback={getLandmarks} mirrored={mirrored}/>}
     </div>
   );
   };
