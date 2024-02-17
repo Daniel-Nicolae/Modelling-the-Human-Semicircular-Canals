@@ -14,18 +14,20 @@ interface Props {
 const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
     const cameraMode = "p"
     
-    let camera: THREE.Camera, scene: THREE.Scene, renderer: THREE.WebGLRenderer;
+    const camera = useRef<THREE.Camera>()
+    const scene = useRef<THREE.Scene>()
+    const renderer = useRef<THREE.WebGLRenderer>()
     const mesh = useRef<THREE.Mesh>()
     useEffect(() => {
         // Renderer initialisation
         const canvas = document.getElementById("canalCanvas") as HTMLCanvasElement
-        renderer = new THREE.WebGLRenderer({canvas: canvas!, antialias: true})
-        renderer.setSize(videoSize.width, videoSize.height)
-        document.body.appendChild(renderer.domElement) // automatically creates the canvas
+        renderer.current = new THREE.WebGLRenderer({canvas: canvas!, antialias: true})
+        renderer.current.setSize(videoSize.width, videoSize.height)
+        document.body.appendChild(renderer.current.domElement) // automatically creates the canvas
 
         // Scene initialisation
-        scene = new THREE.Scene()
-        scene.background = new THREE.Color(0x72645b);
+        scene.current = new THREE.Scene()
+        scene.current.background = new THREE.Color(0x72645b);
 
         // Camera initialisation
         function initialiseCamera (cameraMode: string) {
@@ -39,18 +41,18 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
                 return camera
             }
         }
-        camera = initialiseCamera(cameraMode)
-        camera.position.set(0, 0, 60)
+        camera.current = initialiseCamera(cameraMode)
+        camera.current.position.set(0, 0, 60)
 
         // Add lights
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.2)
         ambientLight.castShadow = true
-        scene.add(ambientLight)
+        scene.current.add(ambientLight)
 
         const pointLight = new THREE.PointLight(0xffffff, 4000)
         pointLight.castShadow = true
-        camera.add(pointLight);
-        scene.add(camera)
+        camera.current.add(pointLight);
+        scene.current.add(camera.current)
 
         // Load Canal Mesh
         const loader = new PLYLoader()
@@ -66,7 +68,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
             loadedMesh.castShadow = true;
             loadedMesh.receiveShadow = true;
             mesh.current = loadedMesh
-            scene.add(mesh.current)
+            scene.current!.add(mesh.current)
         })
 
         // Add ground
@@ -76,13 +78,13 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
         );
         plane.rotation.x = -Math.PI/2;
         plane.position.y = -10;
-        scene.add(plane);
+        scene.current.add(plane);
 
         const loop = animate() 
         
         return () => {
             cancelAnimationFrame(loop) 
-            scene.clear()
+            scene.current!.clear()
         }
     }, [])
    
@@ -90,13 +92,13 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
     function animate() {
         const loop = requestAnimationFrame(animate);
         const landmarks = landmarksCallback()
-        if (scene.children.length === 5) scene.children.splice(3, 1) // fix mesh added twice by the useEffect
+        if (scene.current!.children.length === 5) scene.current!.children.splice(3, 1) // fix mesh added twice by the useEffect
         if (mesh.current) {
             mesh.current.rotation.set(0, 0, 0)
             // mesh.current.rotation.y += Math.PI
             const rotationMatrix = getRotationMatrix(landmarks, ear, canal)
             mesh.current.applyMatrix4(rotationMatrix) 
-            renderer.render(scene, camera)
+            renderer.current!.render(scene.current!, camera.current!)
         }
         return loop
     }
