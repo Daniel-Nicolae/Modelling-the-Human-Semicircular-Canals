@@ -4,7 +4,6 @@ import Webcam from "react-webcam"
 
 import { runDetector } from "../facemesh/FaceModel";
 import { videoSize } from "../config";
-import { drawFaceMesh } from "../facemesh/FaceDrawer";
 
 interface Props {
     landmarksRef: React.MutableRefObject<Keypoint[]>

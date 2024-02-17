@@ -22,7 +22,6 @@ export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasEle
         const estimationConfig = {flipHorizontal: true}
         const faces = await detector.estimateFaces(video, estimationConfig);
         if (faces.length !== 0) {
-            // callback(faces[0].keypoints)
             landmarksRef.current = faces[0].keypoints
             const ctx = canvas.getContext('2d');
             ctx!.clearRect(0, 0, canvas.width, canvas.height);
