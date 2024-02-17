@@ -18,7 +18,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
     const mesh = useRef<THREE.Mesh>()
     useEffect(() => {
         // Renderer initialisation
-        const canvas = document.getElementById("canalCanvas")
+        const canvas = document.getElementById("canalCanvas") as HTMLCanvasElement
         renderer = new THREE.WebGLRenderer({canvas: canvas!, antialias: true})
         renderer.setSize(videoSize.width, videoSize.height)
         document.body.appendChild(renderer.domElement) // automatically creates the canvas
@@ -35,26 +35,27 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
                 camera.bottom = graphicsSize.height/2; camera.top = graphicsSize.height/2;
                 return camera
             } else {
-                const camera = new THREE.PerspectiveCamera(50, graphicsSize.width/graphicsSize.height)
+                const camera = new THREE.PerspectiveCamera(25, graphicsSize.width/graphicsSize.height)
                 return camera
             }
         }
         camera = initialiseCamera(cameraMode)
-        camera.position.set(0, 0, 15)
+        camera.position.set(0, 0, 60)
 
         // Add lights
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.2)
         ambientLight.castShadow = true
         scene.add(ambientLight)
 
-        const pointLight = new THREE.PointLight(0xffffff, 700)
+        const pointLight = new THREE.PointLight(0xffffff, 4000)
         pointLight.castShadow = true
         camera.add(pointLight);
         scene.add(camera)
 
         // Load Canal Mesh
         const loader = new PLYLoader()
-        const meshPath = canal + "_mesh.ply"
+        // const meshPath = canal + "_mesh.ply"
+        const meshPath = "capsule.ply"
         loader.load(meshPath, (geometry) => {
             geometry.computeVertexNormals()
             geometry.center()
@@ -77,20 +78,28 @@ const GraphicsScreen = ({landmarksCallback, ear, canal}: Props) => {
         plane.position.y = -10;
         scene.add(plane);
 
-        animate()
-    })
-    
-    function animate() {
-        requestAnimationFrame(animate);
-        const landmarks = landmarksCallback()
-        if (mesh.current) {
-            const rotationMatrix = getRotationMatrix(landmarks, ear, canal)
-            mesh.current!.applyMatrix4(rotationMatrix)
+        const loop = animate() 
+        
+        return () => {
+            cancelAnimationFrame(loop) 
+            scene.clear()
         }
-        renderer.render(scene, camera)
-        if (mesh.current) mesh.current.rotation.set(0, 0, 0)
+    }, [])
+   
+    const pi = Math.PI
+    function animate() {
+        const loop = requestAnimationFrame(animate);
+        const landmarks = landmarksCallback()
+        if (scene.children.length === 5) scene.children.splice(3, 1) // fix mesh added twice by the useEffect
+        if (mesh.current) {
+            mesh.current.rotation.set(0, 0, 0)
+            // mesh.current.rotation.y += Math.PI
+            const rotationMatrix = getRotationMatrix(landmarks, ear, canal)
+            mesh.current.applyMatrix4(rotationMatrix) 
+            renderer.render(scene, camera)
+        }
+        return loop
     }
-
     
 
     return (
