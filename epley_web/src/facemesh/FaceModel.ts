@@ -4,8 +4,9 @@ import '@mediapipe/face_mesh';
 import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
 import { MediaPipeFaceMeshMediaPipeModelConfig, FaceLandmarksDetector } from "@tensorflow-models/face-landmarks-detection";
 import { drawFaceMesh } from "./FaceDrawer";
+import Webcam from "react-webcam";
 
-export const runDetector = async (video: HTMLVideoElement, mirrored: boolean, canvas: HTMLCanvasElement, 
+export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasElement, 
                                   landmarksRef: React.MutableRefObject<faceLandmarksDetection.Keypoint[]>, 
                                   meshActiveCallback: () => boolean) => {
     const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh
@@ -14,19 +15,17 @@ export const runDetector = async (video: HTMLVideoElement, mirrored: boolean, ca
         solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh',
         refineLandmarks: false
     }
-    const detector = await faceLandmarksDetection.createDetector(
-        model,
-        detectorConfig
-    )
+    const detector = await faceLandmarksDetection.createDetector(model, detectorConfig)
+    
     const detect = async (detector: FaceLandmarksDetector) => {
-        const estimationConfig = {flipHorizontal: mirrored}
-        const faces = await detector.estimateFaces(video, estimationConfig);
-        if (faces.length !== 0) {
-            landmarksRef.current = faces[0].keypoints
-            const ctx = canvas.getContext('2d')
-            ctx!.clearRect(0, 0, canvas.width, canvas.height)
-            if (meshActiveCallback()) drawFaceMesh(canvas, faces[0].keypoints)    
-        }
+        if (video) {
+            const faces = await detector.estimateFaces(video)
+            if (faces.length !== 0) {
+                landmarksRef.current = faces[0].keypoints
+                const ctx = canvas.getContext('2d')
+                ctx!.clearRect(0, 0, canvas.width, canvas.height)
+                if (meshActiveCallback()) drawFaceMesh(canvas, faces[0].keypoints)    
+        }}
     }
     const modelLoop = setInterval(detect, 20, detector)
     return modelLoop

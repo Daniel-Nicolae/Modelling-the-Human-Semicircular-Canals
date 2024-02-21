@@ -34,7 +34,7 @@ pitchCorrectionMatrix.set(1,  0,                0,               0,
                           0, -Math.sin(pitch),  Math.cos(pitch), 0,
                           0, 0,                 0,               1)
 
-const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String) => {
+const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String, currentCamera: number) => {
     const rotationMatrix = new Matrix4()
     
     const landmarksChosen: number[] = []

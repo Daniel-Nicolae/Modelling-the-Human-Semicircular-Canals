@@ -1,4 +1,4 @@
-import { useEffect, useState, MouseEvent } from "react";
+import { MouseEvent } from "react";
 
 import ButtonColumn from "../components/ButtonColumn";
 import Separator from "../components/Separator";
@@ -23,6 +23,7 @@ function SelectScreen ({canalCallback, earCallback}: Props) {
 
     return ( 
         <div>
+            <h4 style={{textAlign: "center"}}>Please select <br/> the affected canal</h4>
             <Separator space={8}/>
             <ButtonColumn buttonLabels={canals} onPressButton={handlePressCanal}/>
             <Separator space={8}/>

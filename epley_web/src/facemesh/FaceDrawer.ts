@@ -7,8 +7,8 @@ import { videoSize } from "../config";
 export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[]) => {
     if (!canvas) return
     const ctx = canvas.getContext("2d")!
-    ctx.canvas.width = videoSize.width
-    ctx.canvas.height = videoSize.height
+    ctx.canvas.width = window.innerWidth*0.25
+    ctx.canvas.height = window.innerWidth*0.25*3/4
 
     // ctx.font = "13px Arial";
     // ctx.fillStyle = "red";

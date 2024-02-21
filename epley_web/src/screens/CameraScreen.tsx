@@ -1,75 +1,59 @@
-import { ReactEventHandler, SyntheticEvent, useEffect, useRef, useState } from "react";
+import { SyntheticEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 import Webcam from "react-webcam"
+import { FaceLandmarksDetector } from "@tensorflow-models/face-landmarks-detection";
 
 import { runDetector } from "../facemesh/FaceModel";
 import { videoSize } from "../config";
 
+
 interface Props {
     landmarksRef: React.MutableRefObject<Keypoint[]>
-    mirrored: boolean
-    setMirrored: (mirrored: boolean) => void
+    currentCamera: number
+    meshActiveCallback: () => boolean
+    loopRef: React.MutableRefObject<NodeJS.Timer | undefined>
 }
 
-function CameraScreen ({landmarksRef, mirrored, setMirrored}: Props) {
-      
-    const videoConstraints = {
-        width: videoSize.width,
-        height: videoSize.height,
-        facingMode: "user",
-    };
+function CameraScreen ({landmarksRef, currentCamera, meshActiveCallback, loopRef}: Props) {
+
+    const [cameraIds, setCameraIds] = useState<string[]>([])
+    useLayoutEffect(() => {
+        async function getDevices() {
+            const devices = await navigator.mediaDevices.enumerateDevices()
+            const cameras = devices.filter((item) => item.kind === "videoinput")
+            setCameraIds(cameras.map((item, index) => item.deviceId))
+        }
+        getDevices()
+    }, [])
 
     const webcamRef = useRef<Webcam>(null)
-    // const loopRef = useRef<NodeJS.Timer>()
-    const loopRef = useRef<NodeJS.Timer>()
-
-    const [loaded, setLoaded] = useState(false)
-
-    const meshActive = useRef(false)
-    const meshActiveCallback = () => meshActive.current
-
     const handleVideoLoad = async (videoNode: SyntheticEvent) => {
         const video = videoNode.target as HTMLVideoElement
         if (video.readyState !== 4) return;
-        if (loaded) return;
         const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
-        loopRef.current = await runDetector(video, mirrored, canvas, landmarksRef, meshActiveCallback) //running detection on video
-        setLoaded(true);
-    };
-
-    const handleMirror = async () => {
-        setMirrored(!mirrored)
-        mirrored = !mirrored
-        const video = webcamRef.current!.video as HTMLVideoElement
-        const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
-        clearInterval(loopRef.current)
-        loopRef.current = await runDetector(video, mirrored, canvas, landmarksRef, meshActiveCallback)
+        loopRef.current = await runDetector(video, canvas, landmarksRef, meshActiveCallback) //running detection on video
     }
 
+    
+    
+    if (cameraIds.length === 0) return <></>
     return (
-        <div style={{position: "relative"}}>
-            <div>
-                <Webcam 
-                    ref={webcamRef}
-                    videoConstraints={videoConstraints} 
-                    mirrored={mirrored} 
-                    onLoadedData={handleVideoLoad}
-                    style={{position: "absolute", top: 0, left: 0}}
-                />
-                <button  className="btn btn-warning" onClick={() => meshActive.current = !meshActive.current} 
-                         style={{position: 'absolute', top: videoSize.height + 10, left: 0}}>
-                    Toggle Face Mesh
-                </button> 
-                <button className="btn btn-warning" 
-                        onClick={handleMirror}
-                        style={{marginTop: videoSize.height + 50}}>Toggle Mirrored</button>
-                <canvas id="faceMeshCanvas" style={{
+        <>
+            <Webcam 
+                ref={webcamRef}
+                videoConstraints={{
+                    width: window.innerWidth*0.25,
+                    aspectRatio: 4/3,
+                    deviceId: cameraIds[currentCamera]}}
+                onLoadedData={handleVideoLoad}
+            />
+            <canvas id="faceMeshCanvas"
+                    style={{
                         position: "absolute", 
-                        top: 0, left: 0, 
-                        width: videoSize.width, height: videoSize.height}}/>
-            </div>
-        </div>
-    );
+                        top: 5, left: window.innerWidth*0.25, 
+                        width: window.innerWidth*0.25, height: window.innerWidth*0.25*3/4}}/>
+        </>
+    )
 }
 
-export default CameraScreen;
+export default CameraScreen
