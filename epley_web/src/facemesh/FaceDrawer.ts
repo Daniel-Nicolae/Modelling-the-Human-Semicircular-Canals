@@ -1,7 +1,5 @@
-import * as THREE from "three"
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 import FaceTesselation from "./FaceTesselation";
-import { videoSize } from "../config";
 
 
 export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[]) => {

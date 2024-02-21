@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import SelectScreen from './screens/SelectScreen';
 import CameraScreen from './screens/CameraScreen';

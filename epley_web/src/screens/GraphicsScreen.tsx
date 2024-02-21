@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
-import { graphicsSize, videoSize } from "../config";
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
 import getRotationMatrix from "../facemesh/getRotationMatrix";
 
@@ -13,7 +12,6 @@ interface Props {
 }
 
 const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) => {
-    const cameraMode = "p"
     
     const camera = useRef<THREE.Camera>()
     const scene = useRef<THREE.Scene>()
@@ -31,18 +29,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) =
         scene.current.background = new THREE.Color(0x72645b);
 
         // Camera initialisation
-        function initialiseCamera (cameraMode: string) {
-            if (cameraMode === "o") {
-                const camera = new THREE.OrthographicCamera()
-                camera.left = -graphicsSize.width/2; camera.right = graphicsSize.width/2;
-                camera.bottom = graphicsSize.height/2; camera.top = graphicsSize.height/2;
-                return camera
-            } else {
-                const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight)
-                return camera
-            }
-        }
-        camera.current = initialiseCamera(cameraMode)
+        camera.current = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight)
         camera.current.position.set(0, 0, 10) 
         camera.current.lookAt(0, 0, 0)
 

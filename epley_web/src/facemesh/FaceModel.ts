@@ -4,7 +4,6 @@ import '@mediapipe/face_mesh';
 import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection";
 import { MediaPipeFaceMeshMediaPipeModelConfig, FaceLandmarksDetector } from "@tensorflow-models/face-landmarks-detection";
 import { drawFaceMesh } from "./FaceDrawer";
-import Webcam from "react-webcam";
 
 export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasElement, 
                                   landmarksRef: React.MutableRefObject<faceLandmarksDetection.Keypoint[]>, 
