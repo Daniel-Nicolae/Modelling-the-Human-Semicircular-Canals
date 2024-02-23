@@ -1,6 +1,5 @@
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection";
 import { Matrix4, Vector3 } from "three";
-import { cameraPitch } from "../config";
 
 const normalise = (x: number[]) => {
     const l2 = Math.sqrt(x[0]*x[0] + x[1]*x[1] + x[2]*x[2])
@@ -27,12 +26,12 @@ const getReferenceFrame = ([A, B, C]: Keypoint[]) => {
     return [x, y, z]
 }
 
-const pitch = cameraPitch
+const pitch = -Math.PI/6
 const pitchCorrectionMatrix = new Matrix4()
 pitchCorrectionMatrix.set(1,  0,                0,               0,
                           0,  Math.cos(pitch),  Math.sin(pitch), 0,
                           0, -Math.sin(pitch),  Math.cos(pitch), 0,
-                          0, 0,                 0,               1)
+                          0,  0,                 0,               1)
 
 const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String, currentCamera: number) => {
     const rotationMatrix = new Matrix4()
@@ -45,8 +44,9 @@ const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String, cu
     const basis = getReferenceFrame(landmarksChosen.map((item, index) => landmarks[item]))
     const [xVec, yVec, zVec] = basis.map((item, index) => new Vector3(item[0], item[1], item[2]))
     rotationMatrix.makeBasis(xVec, yVec, zVec)
+    rotationMatrix.multiply(pitchCorrectionMatrix)
 
-    return rotationMatrix.multiply(pitchCorrectionMatrix)
+    return rotationMatrix
 }
 
 export default getRotationMatrix
