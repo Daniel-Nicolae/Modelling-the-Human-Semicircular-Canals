@@ -5,7 +5,7 @@ import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detec
 import { MediaPipeFaceMeshMediaPipeModelConfig, FaceLandmarksDetector } from "@tensorflow-models/face-landmarks-detection";
 import { drawFaceMesh } from "./FaceDrawer";
 
-export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasElement, 
+export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasElement, mirrored: boolean,
                                   landmarksRef: React.MutableRefObject<faceLandmarksDetection.Keypoint[]>, 
                                   meshActiveCallback: () => boolean) => {
     const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh
@@ -18,7 +18,7 @@ export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasEle
     
     const detect = async (detector: FaceLandmarksDetector) => {
         if (video) {
-            const faces = await detector.estimateFaces(video)
+            const faces = await detector.estimateFaces(video, {flipHorizontal: mirrored})
             if (faces.length !== 0) {
                 landmarksRef.current = faces[0].keypoints
                 const ctx = canvas.getContext('2d')

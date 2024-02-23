@@ -55,7 +55,8 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) =
                 const loadedMesh = new THREE.Mesh(geometry, material);
 
                 mesh.current = loadedMesh
-                if (ear === "Left") mesh.current.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
+                if ((ear === "Left" && currentCamera === 0) || (ear === "Right" && currentCamera === 1)) 
+                    mesh.current.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
                 scene.current!.add(mesh.current)
         })}
 
@@ -89,8 +90,6 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) =
             scene.current!.clear()
         }
     }, [ear, canal, landmarksCallback])
-   
-    
 
     return (
         <canvas id="canalCanvas"/>

@@ -29,7 +29,8 @@ function CameraScreen ({landmarksRef, currentCamera, meshActiveCallback, loopRef
         const video = videoNode.target as HTMLVideoElement
         if (video.readyState !== 4) return;
         const canvas = document.getElementById("faceMeshCanvas") as HTMLCanvasElement
-        loopRef.current = await runDetector(video, canvas, landmarksRef, meshActiveCallback) //running detection on video
+        const mirrored = currentCamera === 1
+        loopRef.current = await runDetector(video, canvas, mirrored, landmarksRef, meshActiveCallback) //running detection on video
     }
 
     
@@ -44,6 +45,7 @@ function CameraScreen ({landmarksRef, currentCamera, meshActiveCallback, loopRef
                     aspectRatio: 4/3,
                     deviceId: cameraIds[currentCamera]}}
                 onLoadedData={handleVideoLoad}
+                mirrored={currentCamera === 1}
             />
             <canvas id="faceMeshCanvas"
                     style={{

@@ -20,7 +20,7 @@ const App = () => {
   const [affectedCanal, setAffectedCanal] = useState("")
   const [affectedEar, setAffectedEar] = useState("")  
 
-  const [currentCamera, setCurrentCamera] = useState(0)
+  const [currentCamera, setCurrentCamera] = useState(1)
   const meshActive = useRef(false)
   const meshActiveCallback = () => meshActive.current
   const loopRef = useRef<NodeJS.Timer>()
