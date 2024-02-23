@@ -6,17 +6,21 @@ import getRotationMatrix from "../facemesh/getRotationMatrix";
 
 interface Props {
     landmarksCallback: () => Keypoint[]
-    canal: String
-    ear: String
+    canal: string
+    ear: string
     currentCamera: number
+    stage: number
+    setStage: (stage: number) => void 
 }
 
-const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) => {
+const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, setStage}: Props) => {
     
     const camera = useRef<THREE.Camera>()
     const scene = useRef<THREE.Scene>()
     const renderer = useRef<THREE.WebGLRenderer>()
     const mesh = useRef<THREE.Mesh>()
+    const meshParts = useRef<THREE.Mesh[]>([])
+    const meshPartsLength: {[key: string]: number} = {posterior: 5, lateral: 0, anterior: 0}
     useEffect(() => {
         const pi = Math.PI
         // Renderer initialisation
@@ -34,11 +38,10 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) =
         camera.current.lookAt(0, 0, 0)
 
         // Add lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
-        ambientLight.castShadow = true
-        scene.current.add(ambientLight)
+        const sectionHighlight = new THREE.AmbientLight(0xffbb33, 1)
+        scene.current.add(sectionHighlight)
 
-        const pointLight = new THREE.PointLight(0xffffff, 300)
+        const pointLight = new THREE.PointLight(0xffffff, 200)
         pointLight.castShadow = true
         camera.current.add(pointLight);
         scene.current.add(camera.current)
@@ -46,19 +49,35 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) =
         // Load Canal Mesh
         if (canal && ear) {
             const loader = new PLYLoader()
-            const meshPath = "meshes/" + canal + "_mesh.ply"
-            // const meshPath = "meshes/capsule.ply"
-            loader.load(meshPath, (geometry) => {
-                geometry.center()
+            for (let i=0; i<meshPartsLength[canal]; i++) {
+                const meshPath = "meshes/" + canal + "_" + i.toString() + ".ply"
+                loader.load(meshPath, (geometry) => {
 
-                const material = new THREE.MeshStandardMaterial({color: 0x009cff, side: THREE.DoubleSide, flatShading: true})
-                const loadedMesh = new THREE.Mesh(geometry, material);
+                    const color = (i === stage) ? 0xffbb33 : 0x0022aa 
+                    const material = new THREE.MeshStandardMaterial({color: color, side: THREE.DoubleSide, flatShading: true})
+                    const loadedMesh = new THREE.Mesh(geometry, material);
 
-                mesh.current = loadedMesh
-                if ((ear === "Left" && currentCamera === 0) || (ear === "Right" && currentCamera === 1)) 
-                    mesh.current.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
-                scene.current!.add(mesh.current)
-        })}
+                    if ((ear === "left" && currentCamera === 0) || (ear === "right" && currentCamera === 1)) 
+                        loadedMesh.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
+                    scene.current!.add(loadedMesh)
+                    meshParts.current.push(loadedMesh)
+                })
+            }
+
+            // const meshPath = "meshes/" + canal + ".ply"
+            // // const meshPath = "meshes/capsule.ply"
+            // loader.load(meshPath, (geometry) => {
+            //     geometry.center()
+
+            //     const material = new THREE.MeshStandardMaterial({color: 0x009cff, side: THREE.DoubleSide, flatShading: true})
+            //     const loadedMesh = new THREE.Mesh(geometry, material);
+
+            //     mesh.current = loadedMesh
+            //     if ((ear === "Left" && currentCamera === 0) || (ear === "Right" && currentCamera === 1)) 
+            //         mesh.current.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
+            //     scene.current!.add(mesh.current)
+            // })
+        }
 
         // Add ground
         // const plane = new THREE.Mesh(
@@ -72,13 +91,12 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) =
         let loop: number = requestAnimationFrame(animate)
 
         function animate() {
-            const landmarks = landmarksCallback()
-            if (scene.current!.children.length === 4) scene.current!.children.splice(2, 1) // fix mesh added twice by the useEffect
-            if (mesh.current) {
-                mesh.current.rotation.set(pi, 0, 0)
+            if (meshParts.current[0]) {
+                for (let mesh of meshParts.current) mesh.rotation.set(pi, 0, 0)
+                const landmarks = landmarksCallback()
                 if (landmarks[0]) {
                     const rotationMatrix = getRotationMatrix(landmarks, ear, canal, currentCamera)
-                    mesh.current.applyMatrix4(rotationMatrix) 
+                    for (let mesh of meshParts.current) mesh.applyMatrix4(rotationMatrix) 
                 }
                 renderer.current!.render(scene.current!, camera.current!)
             }
@@ -89,7 +107,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) =
             cancelAnimationFrame(loop) 
             scene.current!.clear()
         }
-    }, [ear, canal, landmarksCallback])
+    }, [ear, canal, stage, landmarksCallback])
 
     return (
         <canvas id="canalCanvas"/>

@@ -39,7 +39,10 @@ const App = () => {
       <Separator space={5}/>
 
         <div style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
-          <SelectScreen canalCallback={setAffectedCanal} earCallback={setAffectedEar}/>
+          <div style={{display: "flex", flexDirection: "column", width: "45%", alignItems: "center"}}>
+            <SelectScreen canalCallback={setAffectedCanal} earCallback={setAffectedEar}/>
+            <p>{affectedEar} {affectedCanal}</p>
+          </div>
           <CameraScreen 
               landmarksRef={landmarksRef} 
               currentCamera={currentCamera}
@@ -49,7 +52,13 @@ const App = () => {
         </div>
 
         <Separator space={5}/>
-        <GraphicsScreen landmarksCallback={getLandmarks} canal={affectedCanal} ear={affectedEar} currentCamera={currentCamera}/>
+        <GraphicsScreen 
+            landmarksCallback={getLandmarks} 
+            canal={affectedCanal} 
+            ear={affectedEar} 
+            currentCamera={currentCamera}
+            stage={stage}
+            setStage={setStage}/>
         <Separator space={5}/>
 
         <div style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-around"}}>
