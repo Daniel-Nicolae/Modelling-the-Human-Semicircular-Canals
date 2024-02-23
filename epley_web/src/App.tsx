@@ -5,6 +5,7 @@ import CameraScreen from './screens/CameraScreen';
 import Separator from './components/Separator';
 import GraphicsScreen from './screens/GraphicsScreen';
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
+import InstructionsScreen from './screens/InstructionsScreen';
 
 const App = () => {
 
@@ -23,8 +24,10 @@ const App = () => {
   const [currentCamera, setCurrentCamera] = useState(1)
   const meshActive = useRef(false)
   const meshActiveCallback = () => meshActive.current
-  const loopRef = useRef<NodeJS.Timer>()
 
+  const [stage, setStage] = useState(0) 
+
+  const loopRef = useRef<NodeJS.Timer>()
   const handleToggleCamera = () => {
     if (loopRef.current) clearInterval(loopRef.current)
       setCurrentCamera((currentCamera + 1)%2)
@@ -52,12 +55,13 @@ const App = () => {
         <div style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-around"}}>
           <button className='btn btn-warning' onClick={handleToggleCamera}> Toggle Camera </button>
           <button className='btn btn-warning' onClick={() => {meshActive.current = !meshActive.current}}> Toggle Face Mesh </button>
+          <button className='btn btn-warning' onClick={() => {setStage((stage+1)%4)}}> Toggle stage </button>
         </div>
 
       </div>
-
-      <div>
-        <canvas  />
+      <div style={{width: "1%"}}/>
+      <div style={{display: "flex", flexDirection: "column", width: "50%", alignContent: "center"}}>
+        <InstructionsScreen stage={stage} canal={affectedCanal} ear={affectedEar}/>
       </div>
 
     </div>

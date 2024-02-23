@@ -46,8 +46,8 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera}: Props) =
         // Load Canal Mesh
         if (canal && ear) {
             const loader = new PLYLoader()
-            const meshPath = canal + "_mesh.ply"
-            // const meshPath = "capsule.ply"
+            const meshPath = "meshes/" + canal + "_mesh.ply"
+            // const meshPath = "meshes/capsule.ply"
             loader.load(meshPath, (geometry) => {
                 geometry.center()
 

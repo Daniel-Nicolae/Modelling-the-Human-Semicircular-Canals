@@ -26,12 +26,12 @@ const getReferenceFrame = ([A, B, C]: Keypoint[]) => {
     return [x, y, z]
 }
 
-const pitch = -Math.PI/6
+const pitch = 0
 const pitchCorrectionMatrix = new Matrix4()
 pitchCorrectionMatrix.set(1,  0,                0,               0,
                           0,  Math.cos(pitch),  Math.sin(pitch), 0,
                           0, -Math.sin(pitch),  Math.cos(pitch), 0,
-                          0,  0,                 0,               1)
+                          0,  0,                0,               1)
 
 const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String, currentCamera: number) => {
     const rotationMatrix = new Matrix4()

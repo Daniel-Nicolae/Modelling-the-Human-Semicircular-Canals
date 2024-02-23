@@ -27,7 +27,7 @@ export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[]) =
         ctx.lineTo(points[1].x, points[1].y)
         ctx.lineTo(points[2].x, points[2].y)
         ctx.closePath()
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = "black"
         ctx.stroke()
     }
 };
