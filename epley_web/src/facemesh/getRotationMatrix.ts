@@ -37,9 +37,9 @@ const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String, cu
     const rotationMatrix = new Matrix4()
     
     const landmarksChosen: number[] = []
-    if (canal === "Anterior") landmarksChosen.push(3, 1, 0)
-    if (canal === "Posterior") landmarksChosen.push(3, 1, 0)
-    if (canal === "Lateral") landmarksChosen.push(3, 1, 0)
+    if (canal === "anterior") landmarksChosen.push(3, 1, 0)
+    if (canal === "posterior") landmarksChosen.push(3, 1, 0)
+    if (canal === "lateral") landmarksChosen.push(3, 1, 0)
 
     const basis = getReferenceFrame(landmarksChosen.map((item, index) => landmarks[item]))
     const [xVec, yVec, zVec] = basis.map((item, index) => new Vector3(item[0], item[1], item[2]))

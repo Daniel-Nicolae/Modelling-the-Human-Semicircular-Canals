@@ -18,8 +18,8 @@ function SelectScreen ({canalCallback, earCallback}: Props) {
         earCallback(target.value);
     }
 
-    const canals: string[] = ["Anterior", "Posterior", "Lateral"]
-    const ears: string[] = ["Left", "Right"]
+    const canals: string[] = ["anterior", "posterior", "lateral"]
+    const ears: string[] = ["left", "right"]
 
     return ( 
         <div>
