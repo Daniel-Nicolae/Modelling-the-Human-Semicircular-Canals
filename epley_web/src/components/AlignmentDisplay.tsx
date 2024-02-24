@@ -19,6 +19,7 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback}: Prop
     useEffect(() => {
         if (loop.current) clearInterval(loop.current)
         let timer = 0
+        setColor(BLACK)
         if (stage !== meshPartsLength[canal] - 1 && stage !== 0) 
             loop.current = setInterval(() => {
                 const newAlignment = alignmentCallback()
