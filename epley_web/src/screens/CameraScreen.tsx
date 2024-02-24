@@ -2,7 +2,7 @@ import { SyntheticEvent, useLayoutEffect, useRef, useState } from "react";
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 import Webcam from "react-webcam"
 
-import { runDetector } from "../facemesh/FaceModel";
+import { runDetector } from "../utils/FaceModel";
 
 
 interface Props {

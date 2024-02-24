@@ -6,6 +6,7 @@ import Separator from './components/Separator';
 import GraphicsScreen from './screens/GraphicsScreen';
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 import InstructionsScreen from './screens/InstructionsScreen';
+import { meshPartsLength } from './utils/Alignment';
 
 const App = () => {
 
@@ -41,7 +42,7 @@ const App = () => {
         <div style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
           <div style={{display: "flex", flexDirection: "column", width: "45%", alignItems: "center"}}>
             <SelectScreen canalCallback={setAffectedCanal} earCallback={setAffectedEar}/>
-            <p>{affectedEar} {affectedCanal}</p>
+            <h4>{affectedEar} {affectedCanal}</h4>
           </div>
           <CameraScreen 
               landmarksRef={landmarksRef} 
@@ -61,11 +62,12 @@ const App = () => {
             setStage={setStage}/>
         <Separator space={5}/>
 
+        {affectedCanal && affectedEar && 
         <div style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-around"}}>
           <button className='btn btn-warning' onClick={handleToggleCamera}> Toggle Camera </button>
           <button className='btn btn-warning' onClick={() => {meshActive.current = !meshActive.current}}> Toggle Face Mesh </button>
-          <button className='btn btn-warning' onClick={() => {setStage((stage+1)%4)}}> Toggle stage </button>
-        </div>
+          <button className='btn btn-warning' onClick={() => {setStage((stage+1)%meshPartsLength[affectedCanal])}}> Toggle stage </button>
+        </div>}
 
       </div>
       <div style={{width: "1%"}}/>

@@ -2,7 +2,9 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Keypoint } from "@tensorflow-models/face-landmarks-detection"
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
-import getRotationMatrix from "../facemesh/getRotationMatrix";
+import getRotationMatrix from "../utils/getRotationMatrix";
+import { meshPartsLength, getAlignment } from "../utils/Alignment";
+import AlignmentDisplay from "../components/AlignmentDisplay";
 
 interface Props {
     landmarksCallback: () => Keypoint[]
@@ -20,7 +22,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, se
     const renderer = useRef<THREE.WebGLRenderer>()
     const mesh = useRef<THREE.Mesh>()
     const meshParts = useRef<THREE.Mesh[]>([])
-    const meshPartsLength: {[key: string]: number} = {posterior: 5, lateral: 0, anterior: 0}
+    const alignment = useRef(0)
     useEffect(() => {
         const pi = Math.PI
         // Renderer initialisation
@@ -38,8 +40,8 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, se
         camera.current.lookAt(0, 0, 0)
 
         // Add lights
-        const sectionHighlight = new THREE.AmbientLight(0xffbb33, 1)
-        scene.current.add(sectionHighlight)
+        const sectionHighlight = new THREE.AmbientLight(0xffbb33, 2)
+        // scene.current.add(sectionHighlight)
 
         const pointLight = new THREE.PointLight(0xffffff, 200)
         pointLight.castShadow = true
@@ -49,7 +51,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, se
         // Load Canal Mesh
         if (canal && ear) {
             const loader = new PLYLoader()
-            for (let i=0; i<meshPartsLength[canal]; i++) {
+            for (let i = 0; i < meshPartsLength[canal]; i++) {
                 const meshPath = "meshes/" + canal + "_" + i.toString() + ".ply"
                 loader.load(meshPath, (geometry) => {
 
@@ -99,6 +101,11 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, se
                     for (let mesh of meshParts.current) mesh.applyMatrix4(rotationMatrix) 
                 }
                 renderer.current!.render(scene.current!, camera.current!)
+                
+                alignment.current = getAlignment(canal, stage, meshParts.current[stage])
+                if (alignment.current > 0.8) {
+                    setStage((stage + 1) % meshPartsLength[canal])          
+                }
             }
             loop = requestAnimationFrame(animate)
         }
@@ -110,7 +117,10 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, se
     }, [ear, canal, stage, landmarksCallback])
 
     return (
-        <canvas id="canalCanvas"/>
+        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+            {ear && canal && <AlignmentDisplay stage={stage} canal={canal} alignmentCallback={() => alignment.current}/>}
+            <canvas id="canalCanvas"/>
+        </div>
     );
 }
 
