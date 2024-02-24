@@ -16,7 +16,7 @@ const THRESHOLD = 0.3
 const DURATION = 5.0
 
 const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, cameraCallback}: Props) => {
-    const [alignment, setAligment] = useState(0)
+    const [displayAlignment, setDisplayAligment] = useState(0)
     const [color, setColor] = useState(BLACK)
     const [displayTimer, setDisplayTimer] = useState(0.0)
     const loop = useRef<NodeJS.Timer>()
@@ -30,9 +30,9 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
         setColor(BLACK)
         if (stage !== meshPartsLength[canal] - 1 && stage !== 0) 
             loop.current = setInterval(() => {
-                const newAlignment = alignmentCallback()
-                setAligment(newAlignment)
-                if (newAlignment > THRESHOLD) {
+                const alignment = alignmentCallback()
+                setDisplayAligment(alignment)
+                if (alignment > THRESHOLD) {
                     if (timer === 0.0) {
                         setColor(GREEN)
                         playAligned()
@@ -56,7 +56,7 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
 
     return (
         <div style={{display: "flex", width: "100%", flexDirection: "row", justifyContent: "space-around"}}>
-            <h4 style={{color: color}}>Alignment: {(alignment*100).toFixed(2)}%</h4>
+            <h4 style={{color: color}}>Alignment: {(displayAlignment*100).toFixed(2)}%</h4>
             {displayTimer !== 0.0 && <h4>Keep for {(DURATION - displayTimer).toFixed(2)} seconds.</h4>}
         </div>
     ) 

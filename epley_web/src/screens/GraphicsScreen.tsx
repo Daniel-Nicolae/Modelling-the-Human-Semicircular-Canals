@@ -33,7 +33,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
 
         // Scene initialisation
         scene.current = new THREE.Scene()
-        scene.current.background = new THREE.Color(0x72645b);
+        scene.current.background = new THREE.Color(0x72645b)
 
         // Camera initialisation
         camera.current = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight)
@@ -110,8 +110,9 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
         return () => {
             cancelAnimationFrame(loop) 
             scene.current!.clear()
+            meshParts.current = [] // flush any previous loadings
         }
-    }, [ear, canal, stage, landmarksCallback])
+    }, [ear, canal, stage, currentCamera, landmarksCallback])
 
     return (
         <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>

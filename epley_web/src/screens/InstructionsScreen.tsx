@@ -17,7 +17,7 @@ const InstructionsScreen = ({stage, ear, canal}: Props) => {
             ctx.clearRect(0, 0, window.innerWidth/2, window.innerHeight)
             ctx.drawImage(instructionImage, 0, 0)
         }
-    })
+    }, [stage])
 
     return <canvas id="instructionCanvas"/>
 }
