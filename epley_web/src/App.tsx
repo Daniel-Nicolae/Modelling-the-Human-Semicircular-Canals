@@ -59,7 +59,7 @@ const App = () => {
             ear={affectedEar} 
             currentCamera={currentCamera}
             stage={stage}
-            setStage={setStage}/>
+            stageCallback={setStage}/>
         <Separator space={5}/>
 
         {affectedCanal && affectedEar && 

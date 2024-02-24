@@ -12,10 +12,10 @@ interface Props {
     ear: string
     currentCamera: number
     stage: number
-    setStage: (stage: number) => void 
+    stageCallback: (stage: number) => void 
 }
 
-const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, setStage}: Props) => {
+const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, stageCallback}: Props) => {
     
     const camera = useRef<THREE.Camera>()
     const scene = useRef<THREE.Scene>()
@@ -101,11 +101,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, se
                     for (let mesh of meshParts.current) mesh.applyMatrix4(rotationMatrix) 
                 }
                 renderer.current!.render(scene.current!, camera.current!)
-                
                 alignment.current = getAlignment(canal, stage, meshParts.current[stage])
-                if (alignment.current > 0.8) {
-                    setStage((stage + 1) % meshPartsLength[canal])          
-                }
             }
             loop = requestAnimationFrame(animate)
         }
@@ -118,7 +114,11 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, se
 
     return (
         <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-            {ear && canal && <AlignmentDisplay stage={stage} canal={canal} alignmentCallback={() => alignment.current}/>}
+            {ear && canal && <AlignmentDisplay 
+                                stage={stage} 
+                                canal={canal} 
+                                stageCallback={stageCallback}
+                                alignmentCallback={() => alignment.current}/>}
             <canvas id="canalCanvas"/>
         </div>
     );
