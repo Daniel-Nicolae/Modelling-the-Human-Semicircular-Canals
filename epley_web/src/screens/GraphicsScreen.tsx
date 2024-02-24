@@ -36,14 +36,14 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, st
 
         // Camera initialisation
         camera.current = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight)
-        camera.current.position.set(0, 0, 10) 
+        camera.current.position.set(0, 0, 11) 
         camera.current.lookAt(0, 0, 0)
 
         // Add lights
         const sectionHighlight = new THREE.AmbientLight(0xffbb33, 2)
         // scene.current.add(sectionHighlight)
 
-        const pointLight = new THREE.PointLight(0xffffff, 200)
+        const pointLight = new THREE.PointLight(0xffffff, 250)
         pointLight.castShadow = true
         camera.current.add(pointLight);
         scene.current.add(camera.current)
