@@ -23,6 +23,7 @@
     "react-webcam": "^7.2.0",
     "three": "^0.161.0",
     "typescript": "^4.4.2",
+    "use-sound": "^4.0.1",
     "web-vitals": "^2.1.0"
   },
   "scripts": {

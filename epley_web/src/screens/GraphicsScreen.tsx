@@ -11,11 +11,12 @@ interface Props {
     canal: string
     ear: string
     currentCamera: number
+    cameraCallback: () => void
     stage: number
     stageCallback: (stage: number) => void 
 }
 
-const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, stageCallback}: Props) => {
+const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCallback, stage, stageCallback}: Props) => {
     
     const camera = useRef<THREE.Camera>()
     const scene = useRef<THREE.Scene>()
@@ -118,7 +119,8 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, stage, st
                                 stage={stage} 
                                 canal={canal} 
                                 stageCallback={stageCallback}
-                                alignmentCallback={() => alignment.current}/>}
+                                alignmentCallback={() => alignment.current}
+                                cameraCallback={cameraCallback}/>}
             <canvas id="canalCanvas"/>
         </div>
     );

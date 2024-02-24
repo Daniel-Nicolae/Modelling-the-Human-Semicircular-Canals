@@ -58,6 +58,7 @@ const App = () => {
             canal={affectedCanal} 
             ear={affectedEar} 
             currentCamera={currentCamera}
+            cameraCallback={handleToggleCamera}
             stage={stage}
             stageCallback={setStage}/>
         <Separator space={5}/>
