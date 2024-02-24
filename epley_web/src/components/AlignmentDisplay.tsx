@@ -18,15 +18,19 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback}: Prop
 
     useEffect(() => {
         if (loop.current) clearInterval(loop.current)
-        if (stage !== meshPartsLength[canal] - 1) 
+        let timer = 0
+        if (stage !== meshPartsLength[canal] - 1 && stage !== 0) 
             loop.current = setInterval(() => {
                 const newAlignment = alignmentCallback()
                 setAligment(newAlignment)
-                if (newAlignment > 0.6) setColor(GREEN)
-                else setColor(BLACK)
                 if (newAlignment > 0.7) {
-                    stageCallback((stage + 1) % meshPartsLength[canal]) 
-                }
+                    if (color === BLACK) setColor(GREEN)
+                    timer += 0.15
+                    if (timer > 5.0) stageCallback((stage + 1) % meshPartsLength[canal]) 
+                } else if (timer !== 0.0) {
+                        timer = 0.0
+                        setColor(BLACK)
+                    }
             }, 150)
     }, [stage])
 
