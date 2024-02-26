@@ -12,7 +12,8 @@ interface Props {
 
 const GREEN = "#11bb22"
 const BLACK = "#000000"
-const THRESHOLD = 0.3
+const HIGH_THRESHOLD = 0.6
+const LOW_THRESHOLD = 0.5
 const DURATION = 5.0
 
 const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, cameraCallback}: Props) => {
@@ -32,7 +33,7 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
             loop.current = setInterval(() => {
                 const alignment = alignmentCallback()
                 setDisplayAligment(alignment)
-                if (alignment > THRESHOLD) {
+                if (alignment > HIGH_THRESHOLD) {
                     if (timer === 0.0) {
                         setColor(GREEN)
                         playAligned()
@@ -45,7 +46,7 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
                         timer = 0.0
                         setDisplayTimer(0.0)
                     }
-                } else if (timer !== 0.0) {
+                } else if (alignment < LOW_THRESHOLD && timer !== 0.0) {
                         timer = 0.0
                         setDisplayTimer(0.0)
                         setColor(BLACK)
