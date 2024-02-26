@@ -68,17 +68,18 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
             }
 
             // const meshPath = "meshes/" + canal + ".ply"
-            // // const meshPath = "meshes/capsule.ply"
+            // const meshPath = "meshes/capsule.ply"
             // loader.load(meshPath, (geometry) => {
             //     geometry.center()
 
             //     const material = new THREE.MeshStandardMaterial({color: 0x009cff, side: THREE.DoubleSide, flatShading: true})
             //     const loadedMesh = new THREE.Mesh(geometry, material);
 
-            //     mesh.current = loadedMesh
-            //     if ((ear === "Left" && currentCamera === 0) || (ear === "Right" && currentCamera === 1)) 
-            //         mesh.current.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
-            //     scene.current!.add(mesh.current)
+                
+            //     if ((ear === "left" && currentCamera === 0) || (ear === "right" && currentCamera === 1)) 
+            //         loadedMesh.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
+            //     meshParts.current.push(loadedMesh)
+            //     scene.current!.add(loadedMesh)
             // })
         }
 
@@ -94,7 +95,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
         let loop: number = requestAnimationFrame(animate)
 
         function animate() {
-            if (meshParts.current[0]) {
+            if (meshParts.current[meshPartsLength[canal] - 1]) {
                 for (let mesh of meshParts.current) mesh.rotation.set(pi, 0, 0)
                 const landmarks = landmarksCallback()
                 if (landmarks[0]) {
