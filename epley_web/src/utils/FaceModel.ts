@@ -18,7 +18,7 @@ export const runDetector = async (video: HTMLVideoElement, canvas: HTMLCanvasEle
     
     const detect = async (detector: FaceLandmarksDetector) => {
         if (video) {
-            const faces = await detector.estimateFaces(video, {flipHorizontal: mirrored})
+            const faces = await detector.estimateFaces(video, {flipHorizontal: mirrored, staticImageMode: false})
             if (faces.length !== 0) {
                 landmarksRef.current = faces[0].keypoints
                 const ctx = canvas.getContext('2d')
