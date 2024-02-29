@@ -21,7 +21,6 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
     const camera = useRef<THREE.Camera>()
     const scene = useRef<THREE.Scene>()
     const renderer = useRef<THREE.WebGLRenderer>()
-    const mesh = useRef<THREE.Mesh>()
     const meshParts = useRef<THREE.Mesh[]>([])
     const alignment = useRef(0)
     useEffect(() => {

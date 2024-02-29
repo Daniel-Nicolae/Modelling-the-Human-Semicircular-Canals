@@ -31,7 +31,7 @@ const App = () => {
   const loopRef = useRef<NodeJS.Timer>()
   const handleToggleCamera = () => {
     if (loopRef.current) clearInterval(loopRef.current)
-      setCurrentCamera((currentCamera + 1)%2)
+    setCurrentCamera((currentCamera + 1)%2)
   }
 
   return (

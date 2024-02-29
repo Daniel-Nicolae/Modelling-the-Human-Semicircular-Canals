@@ -12,12 +12,12 @@ interface Props {
 
 const GREEN = "#11bb22"
 const BLACK = "#000000"
-const HIGH_THRESHOLD = 0.6
-const LOW_THRESHOLD = 0.5
+const HIGH_THRESHOLD = 0.95
+const LOW_THRESHOLD = 0.9
 const DURATION = 5.0
 
 const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, cameraCallback}: Props) => {
-    const [displayAlignment, setDisplayAligment] = useState(0)
+    const [displayAlignment, setDisplayAligment] = useState(0.0)
     const [color, setColor] = useState(BLACK)
     const [displayTimer, setDisplayTimer] = useState(0.0)
     const loop = useRef<NodeJS.Timer>()
