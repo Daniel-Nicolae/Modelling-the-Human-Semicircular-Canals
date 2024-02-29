@@ -8,13 +8,6 @@ export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[]) =
     ctx.canvas.width = window.innerWidth*0.25
     ctx.canvas.height = window.innerWidth*0.25*3/4
 
-    // ctx.font = "13px Arial";
-    // ctx.fillStyle = "red";
-    // ctx.textAlign = "center";
-    // landmarks.map((vertex, index) => {
-    //     ctx.fillText(index.toString(), vertex.x+10, vertex.y+10); 
-    // })
-
     for (let i = 0; i < FaceTesselation.length / 3; i++) {
         const points = [
             FaceTesselation[i * 3],
@@ -23,9 +16,9 @@ export const drawFaceMesh = (canvas: HTMLCanvasElement, landmarks: Keypoint[]) =
         ].map((index) => landmarks[index]);
         
         ctx.beginPath()
-        ctx.moveTo(points[0].x, points[0].y)
-        ctx.lineTo(points[1].x, points[1].y)
-        ctx.lineTo(points[2].x, points[2].y)
+        ctx.moveTo(points[0].x/2, points[0].y/2)
+        ctx.lineTo(points[1].x/2, points[1].y/2)
+        ctx.lineTo(points[2].x/2, points[2].y/2)
         ctx.closePath()
         ctx.strokeStyle = "black"
         ctx.stroke()
