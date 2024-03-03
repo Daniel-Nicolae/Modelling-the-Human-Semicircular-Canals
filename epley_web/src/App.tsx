@@ -25,7 +25,7 @@ const App = () => {
   const [started, setStarted] = useState(false)
   const handleStarted = () => {
       if (!started) setStarted(true) 
-      setStage((stage+1)%meshPartsLength[affectedCanal])
+      setStage((stage + 1) % meshPartsLength[affectedCanal])
   }
 
   const meshActive = useRef(false)
@@ -36,8 +36,8 @@ const App = () => {
   const loopRef = useRef<NodeJS.Timer>()
   const [currentCamera, setCurrentCamera] = useState(0) // 0 is right and 1 is left
   const handleToggleCamera = () => {
-    if (loopRef.current) clearInterval(loopRef.current)
-    setCurrentCamera((currentCamera + 1)%2)
+      if (loopRef.current) clearInterval(loopRef.current)
+      setCurrentCamera((currentCamera + 1) % 2)
   }
 
   return (

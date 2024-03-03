@@ -19,7 +19,7 @@ const DURATION = 5.0
 const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, cameraCallback}: Props) => {
     const [displayAlignment, setDisplayAligment] = useState(0.0)
     const [color, setColor] = useState(BLACK)
-    const [displayTimer, setDisplayTimer] = useState(0.0)
+    const [displayTimer, setDisplayTimer] = useState(-1.0)
     const loop = useRef<NodeJS.Timer>()
 
     const [playAligned] = useSound("sounds/aligned.mp3")
@@ -27,29 +27,32 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
 
     useEffect(() => {
         if (loop.current) clearInterval(loop.current)
-        let timer = 0
+        let timer = -1.0
         setColor(BLACK)
         if (stage !== meshPartsLength[canal] - 1 && stage !== 0) 
             loop.current = setInterval(() => {
                 const alignment = alignmentCallback()
                 setDisplayAligment(alignment)
-                if (alignment > HIGH_THRESHOLD) {
-                    if (timer === 0.0) {
-                        setColor(GREEN)
-                        playAligned()
-                    }
+
+                if (alignment > HIGH_THRESHOLD && timer === -1.0) {
+                    setColor(GREEN)
+                    playAligned()
+                    timer = 0.0
+                }
+
+                if (alignment > LOW_THRESHOLD && timer !== -1.0) {
                     timer += 0.15
                     setDisplayTimer(timer)
                     if (timer > DURATION) {
                         stageCallback((stage + 1) % meshPartsLength[canal]) 
                         if (stage === 1) cameraCallback()
-                        timer = 0.0
-                        setDisplayTimer(0.0)
+                        timer = -1.0
+                        setDisplayTimer(timer)
                     }
-                } 
-                else if (alignment < LOW_THRESHOLD && timer !== 0.0) {
-                    timer = 0.0
-                    setDisplayTimer(0.0)
+                }
+                if (alignment < LOW_THRESHOLD && timer !== -1.0) {
+                    timer = -1.0
+                    setDisplayTimer(timer)
                     setColor(BLACK)
                     playNotAligned()
                 }
@@ -59,7 +62,7 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
     return (
         <div style={{display: "flex", width: "100%", flexDirection: "row", justifyContent: "space-around"}}>
             <h4 style={{color: color}}>Alignment: {(displayAlignment*100).toFixed(2)}%</h4>
-            {displayTimer !== 0.0 && <h4>Keep for {(DURATION - displayTimer).toFixed(2)} seconds.</h4>}
+            {displayTimer !== -1.0 && <h4>Keep for {(DURATION - displayTimer).toFixed(2)} seconds.</h4>}
         </div>
     ) 
     
