@@ -24,3 +24,6 @@ yarn-error.log*
 
 # mean meshes
 public/*.ply
+
+# experimental
+src/utils/FaceModel2.ts
