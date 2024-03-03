@@ -36,7 +36,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
 
         // Camera initialisation
         camera.current = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight)
-        camera.current.position.set(0, 0, 11) 
+        camera.current.position.set(0, 0, 13) 
         camera.current.lookAt(0, 0, 0)
 
         // Add lights

@@ -22,7 +22,7 @@ const App = () => {
   const [affectedCanal, setAffectedCanal] = useState("")
   const [affectedEar, setAffectedEar] = useState("")  
 
-  const [currentCamera, setCurrentCamera] = useState(1)
+  const [currentCamera, setCurrentCamera] = useState(1) // 0 is right and 1 is left
   const meshActive = useRef(false)
   const meshActiveCallback = () => meshActive.current
 

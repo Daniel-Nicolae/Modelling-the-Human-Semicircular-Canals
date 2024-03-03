@@ -26,12 +26,23 @@ const getReferenceFrame = ([A, B, C]: Keypoint[]) => {
     return [x, y, z]
 }
 
-const pitch = 0 //Math.PI/2
+const pitch = 0
 const pitchCorrectionMatrix = new Matrix4()
 pitchCorrectionMatrix.set(1,  0,                0,               0,
                           0,  Math.cos(pitch),  Math.sin(pitch), 0,
                           0, -Math.sin(pitch),  Math.cos(pitch), 0,
                           0,  0,                0,               1)
+
+const getRollMatrix = (currentCamera: number) => {
+    const roll = currentCamera === 1 ? Math.PI/2 : -Math.PI/2
+    const rollCorrectionMatrix = new Matrix4()
+    rollCorrectionMatrix.set( Math.cos(roll),  -Math.sin(roll),   0, 0,
+                              Math.sin(roll),   Math.cos(roll),   0, 0,
+                              0,                0,                1, 0,
+                              0,                0,                0, 1)
+    return rollCorrectionMatrix
+}
+
 
 const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String, currentCamera: number) => {
     const rotationMatrix = new Matrix4()
@@ -45,8 +56,9 @@ const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String, cu
     const [xVec, yVec, zVec] = basis.map((item, index) => new Vector3(item[0], item[1], item[2]))
     rotationMatrix.makeBasis(xVec, yVec, zVec)
     rotationMatrix.multiply(pitchCorrectionMatrix)
+    const rollMatrix = getRollMatrix(currentCamera)
 
-    return rotationMatrix
+    return rollMatrix.multiply(rotationMatrix)
 }
 
 export default getRotationMatrix
