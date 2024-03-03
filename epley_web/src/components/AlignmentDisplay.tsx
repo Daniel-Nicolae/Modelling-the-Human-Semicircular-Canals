@@ -24,6 +24,7 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
 
     const [playAligned] = useSound("sounds/aligned.mp3")
     const [playNotAligned] = useSound("sounds/naligned.mp3")
+    const [playStageDone] = useSound("sounds/stagedone.mp3")
 
     useEffect(() => {
         if (loop.current) clearInterval(loop.current)
@@ -48,6 +49,7 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
                         if (stage === 1) cameraCallback()
                         timer = -1.0
                         setDisplayTimer(timer)
+                        playStageDone()
                     }
                 }
                 if (alignment < LOW_THRESHOLD && timer !== -1.0) {
