@@ -6,16 +6,24 @@ import Separator from "../components/Separator";
 interface Props {
     canalCallback: (canal: string) => void
     earCallback: (ear: string) => void
+    cameraCallback: () => void
+    currentCamera: number
+    startedCallback: (started: boolean) => void
+    started: boolean
 }
 
-function SelectScreen ({canalCallback, earCallback}: Props) {
+function SelectScreen ({canalCallback, earCallback, cameraCallback, currentCamera, startedCallback, started}: Props) {
     const handlePressCanal = (event: MouseEvent) => {
-        const target = event.target as HTMLButtonElement;
-        canalCallback(target.value);
+        if (started) return
+        const target = event.target as HTMLButtonElement
+        canalCallback(target.value)
     }
     const handlePressEar = (event: MouseEvent) => {
-        const target = event.target as HTMLButtonElement;
-        earCallback(target.value);
+        if (started) return
+        const target = event.target as HTMLButtonElement
+        earCallback(target.value)
+        if (target.value === "left" && currentCamera === 0) cameraCallback()
+        else if (target.value === "right" && currentCamera === 1) cameraCallback()
     }
 
     const canals: string[] = ["anterior", "posterior", "lateral"]
