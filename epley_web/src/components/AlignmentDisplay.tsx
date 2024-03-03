@@ -46,12 +46,13 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
                         timer = 0.0
                         setDisplayTimer(0.0)
                     }
-                } else if (alignment < LOW_THRESHOLD && timer !== 0.0) {
-                        timer = 0.0
-                        setDisplayTimer(0.0)
-                        setColor(BLACK)
-                        playNotAligned()
-                    }
+                } 
+                else if (alignment < LOW_THRESHOLD && timer !== 0.0) {
+                    timer = 0.0
+                    setDisplayTimer(0.0)
+                    setColor(BLACK)
+                    playNotAligned()
+                }
             }, 150)
     }, [stage])
 
