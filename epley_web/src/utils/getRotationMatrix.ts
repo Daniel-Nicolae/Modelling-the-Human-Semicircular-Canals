@@ -34,7 +34,7 @@ pitchCorrectionMatrix.set(1,  0,                0,               0,
                           0,  0,                0,               1)
 
 const getRollMatrix = (currentCamera: number) => {
-    const roll = currentCamera === 1 ? Math.PI/2 : -Math.PI/2
+    const roll = currentCamera === 1 ? Math.PI/2 : Math.PI/2
     const rollCorrectionMatrix = new Matrix4()
     rollCorrectionMatrix.set( Math.cos(roll),  -Math.sin(roll),   0, 0,
                               Math.sin(roll),   Math.cos(roll),   0, 0,
