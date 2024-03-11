@@ -10,16 +10,19 @@ interface Props {
     currentCamera: number
     meshActiveCallback: () => boolean
     loopRef: React.MutableRefObject<NodeJS.Timer | undefined>
+    cameraIDs: string[]
+    setCameraIDs: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-function CameraScreen ({landmarksRef, currentCamera, meshActiveCallback, loopRef}: Props) {
+function CameraScreen ({landmarksRef, currentCamera, meshActiveCallback, loopRef, cameraIDs, setCameraIDs}: Props) {
 
-    const [cameraIds, setCameraIds] = useState<string[]>([])
     useLayoutEffect(() => {
         async function getDevices() {
             const devices = await navigator.mediaDevices.enumerateDevices()
             const cameras = devices.filter((item) => item.kind === "videoinput")
-            setCameraIds(cameras.map((item, index) => item.deviceId))
+            const t = cameras.map((item, index) => item.deviceId)
+            setCameraIDs([t[1], t[0]])
+            // setCameraIds([cameraIds[1], cameraIds[0]])
         }
         getDevices()
     }, [])
@@ -33,7 +36,7 @@ function CameraScreen ({landmarksRef, currentCamera, meshActiveCallback, loopRef
         loopRef.current = await runDetector(video, canvas, mirrored, landmarksRef, meshActiveCallback) //running detection on video
     }    
     
-    if (cameraIds.length === 0) return <></>
+    if (cameraIDs.length === 0) return <></>
     return (
         <>
             <Webcam 
@@ -41,7 +44,7 @@ function CameraScreen ({landmarksRef, currentCamera, meshActiveCallback, loopRef
                 videoConstraints={{
                     width: window.innerWidth*0.5,
                     aspectRatio: 4/3,
-                    deviceId: cameraIds[currentCamera]}}
+                    deviceId: cameraIDs[currentCamera]}}
                 onLoadedData={handleVideoLoad}
                 mirrored={currentCamera === 1}
                 style={{

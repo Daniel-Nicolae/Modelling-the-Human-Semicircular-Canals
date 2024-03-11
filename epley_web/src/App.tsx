@@ -35,9 +35,14 @@ const App = () => {
 
   const loopRef = useRef<NodeJS.Timer>()
   const [currentCamera, setCurrentCamera] = useState(0) // 0 is right and 1 is left
+  const [cameraIDs, setCameraIDs] = useState<string[]>([])
   const handleToggleCamera = () => {
       if (loopRef.current) clearInterval(loopRef.current)
       setCurrentCamera((currentCamera + 1) % 2)
+  }
+  const fixCamera = () => {
+      if (loopRef.current) clearInterval(loopRef.current)
+      setCameraIDs([cameraIDs[1], cameraIDs[0]])
   }
 
   return (
@@ -62,6 +67,8 @@ const App = () => {
               currentCamera={currentCamera}
               meshActiveCallback={meshActiveCallback}
               loopRef={loopRef}
+              cameraIDs={cameraIDs}
+              setCameraIDs={setCameraIDs}
           />
         </div>
 
@@ -80,13 +87,13 @@ const App = () => {
         <div style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-around"}}>
           <button className='btn btn-warning' onClick={handleToggleCamera}> Toggle Camera </button>
           <button className='btn btn-warning' onClick={() => {meshActive.current = !meshActive.current}}> Toggle Face Mesh </button>
-          <button className='btn btn-warning' onClick={handleStarted}> Toggle stage </button>
+          <button className='btn btn-warning' onClick={handleStarted}> Start </button>
         </div>}
 
       </div>
       <div style={{width: "1%"}}/>
       <div style={{display: "flex", flexDirection: "column", width: "50%", alignContent: "center"}}>
-        <InstructionsScreen stage={stage} canal={affectedCanal} ear={affectedEar}/>
+        <InstructionsScreen stage={stage} canal={affectedCanal} ear={affectedEar} fixCamera={fixCamera}/>
       </div>
 
     </div>
