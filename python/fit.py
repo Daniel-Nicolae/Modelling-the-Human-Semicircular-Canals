@@ -69,10 +69,10 @@ def get_subjects_having_landmarks(subjects, landmarks):
     kept = []
     if landmarks is None or len(landmarks) == 0: return subjects
     for subject in subjects:
-        keep = 1
+        keep = True
         landmarks_dict = get_landmarks_from_ply(subject)
         for landmark in landmarks:
-            if landmark not in landmarks_dict.keys(): keep = 0
+            if landmark not in landmarks_dict.keys(): keep = False
         if keep: kept.append(subject)
     return kept
 
