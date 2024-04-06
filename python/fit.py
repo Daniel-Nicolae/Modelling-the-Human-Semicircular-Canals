@@ -90,8 +90,8 @@ def compute_average_coord_system(subjects, canal, landmarks=None):
         coord_systems[s, :, :] = vecs[:, :].T
     return np.mean(coord_systems, axis=0)
 
-def get_best_coord_system(subjects, canal, visible=True):
-    results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict = load_fiducials_dicts(visible)
+def get_best_coord_system(subjects, canal, visible=True, corrected=False):
+    results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict = load_fiducials_dicts(visible, corrected)
     best_landmarks = get_landmarks_from_key(best_fids_dict[canal][0])
     kept = get_subjects_having_landmarks(subjects, best_landmarks)
     return compute_average_coord_system(kept, canal, best_landmarks)
@@ -192,15 +192,17 @@ def correct_fiducials_dicts(visible=True, save_pickle=False):
                     best_fids_dict[canal][1] = key
 
     if save_pickle:
-        if visible: filename = "../pickles/fiducials_dicts_visible.pickle"
-        else: filename = "../piclkes/fiducials_dicts_full.pickle"
+        if visible: filename = "../pickles/fiducials_dicts_visible_c.pickle"
+        else: filename = "../piclkes/fiducials_dicts_full_c.pickle"
         with open(filename, 'wb') as handle:
             pickle.dump((results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict), handle, protocol=pickle.HIGHEST_PROTOCOL)
     return results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict
 
-def load_fiducials_dicts(visible=True):
-    if visible: filename = "../pickles/fiducials_dicts_visible.pickle"
-    else: filename = "../pickles/fiducials_dicts_full.pickle"
+def load_fiducials_dicts(visible=True, corrected=False):
+    if visible: filename = "../pickles/fiducials_dicts_visible"
+    else: filename = "../pickles/fiducials_dicts_full"
+    if corrected: filename += "_c"
+    filename += ".pickle"
     with open(filename, 'rb') as handle:
         dict_tuple = pickle.load(handle)
     return dict_tuple
@@ -235,8 +237,8 @@ def get_canal_mean_mesh(subjects, canal, landmarks, full=True, save=False):
 
     return mean_mesh
 
-def get_best_canal_mean_mesh(subjects, canal, full=True, save=False):
-    results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict = load_fiducials_dicts()
+def get_best_canal_mean_mesh(subjects, canal, full=True, corrected=False, save=False):
+    results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict = load_fiducials_dicts(corrected=corrected)
     best_landmarks = get_landmarks_from_key(best_fids_dict[canal][0])
     print(best_landmarks)
     return get_canal_mean_mesh(subjects, canal, best_landmarks, full, save)

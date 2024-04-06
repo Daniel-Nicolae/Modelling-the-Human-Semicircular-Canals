@@ -1,8 +1,8 @@
 from fit import *
 
-def compute_variation_modes(subjects, canal, fiducials=None, mode=0, save_pickle=False):
+def compute_variation_modes(subjects, canal, fiducials=None, mode=0, corrected=False, save_pickle=False):
     if fiducials is None:
-        results_dict, fiducials_dict, best_angles, best_improvs, kept_dict = load_fiducials_dicts(visible=True)
+        results_dict, fiducials_dict, best_angles, best_improvs, kept_dict = load_fiducials_dicts(visible=True, corrected=corrected)
         fiducials = get_landmarks_from_key(fiducials_dict[canal][mode])
     kept = get_subjects_having_landmarks(subjects, fiducials)
     vertices, t = get_canal_mesh(kept[0], canal)

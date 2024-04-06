@@ -47,7 +47,7 @@ def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, verbos
     offset = np.zeros(3)
     for i, subject in enumerate(subjects):
         vals, vecs = get_canal_plane(subject, canal, landmarks)
-        vertices = get_canal_mesh(subject, canal, True)[0] 
+        vertices = get_canal_mesh(subject, canal, True, True)[0] 
         if landmarks is not None:
             rotation_matrix = get_rotation_matrix(subject, landmarks)
             vertices = rotate_vertices(vertices, rotation_matrix)
@@ -74,10 +74,10 @@ def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, verbos
     o3d.visualization.draw_geometries([*all_canal_meshes, *all_lines])
 
 
-def best_alignment(subjects, canal, mode, visible=True, all=False, verbose=False):
+def best_alignment(subjects, canal, mode, visible=True, all=False, corrected=False, verbose=False):
     if all: key = "all"
     else: key = canal
-    results_dict, best_fids_dict, best_angles, best_improvs, kept_dict = load_fiducials_dicts(visible)
+    results_dict, best_fids_dict, best_angles, best_improvs, kept_dict = load_fiducials_dicts(visible, corrected)
     best_landmarks = get_landmarks_from_key(best_fids_dict[key][mode])
     kept = get_subjects_having_landmarks(subjects, best_landmarks)
 
