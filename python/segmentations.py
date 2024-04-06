@@ -2,6 +2,10 @@ import pickle
 from meshes import *
 
 
+left = [13, 52, 70]
+invalid = [59, 64]
+right = [i for i in range(1, 74) if i not in left + invalid]
+
 def compute_segments_dict(save_pickle=False):
     path = "../cochlea_data/canonical_coloured.ply"
     mesh = o3d.io.read_triangle_mesh(path)
@@ -63,7 +67,7 @@ def colour_mesh(mesh):
 def get_canal_mesh(subject, canal, full=False, center=False):
     path = get_ply_path(subject)
     mesh = o3d.io.read_triangle_mesh(path)
-    if subject == 13: mesh.vertices = o3d.utility.Vector3dVector(flip_left(mesh))
+    if subject in left: mesh.vertices = o3d.utility.Vector3dVector(flip_left(mesh))
     segments_dict = load_segments_dict()
 
     if full and canal in ["anterior", "posterior"]: canal += "-full"

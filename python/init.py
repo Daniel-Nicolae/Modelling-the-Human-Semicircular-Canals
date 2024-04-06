@@ -3,7 +3,7 @@ from segmentations import compute_segments_dict
 from fit import compute_fiducials_dicts, correct_fiducials_dicts, get_best_canal_mean_mesh, left, right, canals
 from variations import compute_variation_modes
 
-for i in range(1, 54):
+for i in range(1, 74):
     copy_landmarks(i)
 
 compute_segments_dict(save_pickle=True)

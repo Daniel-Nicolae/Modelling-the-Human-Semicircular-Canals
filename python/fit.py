@@ -2,8 +2,6 @@ from segmentations import *
 from landmarks import *
 import copy
 
-left = [13, 52]
-right = [i for i in range(1, 54) if i not in left + [46, 48]]
 canals = ["anterior", "posterior", "lateral"]
 
 def get_rotation_matrix(subject, landmarks):
@@ -184,7 +182,7 @@ def correct_fiducials_dicts(visible=True, save_pickle=False):
     best_fids_dict = {"anterior": ["name", "name"], "lateral": ["name", "name"], "posterior": ["name", "name"], "all": ["name", "name"]}
 
     for key in results_dict:
-        if kept_dict[key] > 25: 
+        if kept_dict[key] >= 25: 
             for canal in ["anterior", "posterior", "lateral"]:
                 if results_dict[key][canal][0] < min_angs_dict[canal]:
                     min_angs_dict[canal] = results_dict[key][canal][0]
@@ -240,4 +238,5 @@ def get_canal_mean_mesh(subjects, canal, landmarks, full=True, save=False):
 def get_best_canal_mean_mesh(subjects, canal, full=True, save=False):
     results_dict, best_fids_dict, min_angs_dict, max_improvs_dict, kept_dict = load_fiducials_dicts()
     best_landmarks = get_landmarks_from_key(best_fids_dict[canal][0])
+    print(best_landmarks)
     return get_canal_mean_mesh(subjects, canal, best_landmarks, full, save)
