@@ -26,6 +26,7 @@ const InstructionsScreen = ({stage, ear, canal, fixCamera}: Props) => {
         <div style={{height: window.innerWidth/6, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
             <h5>Please ensure your external camera is currently running.</h5>
             <h5>If your main camera is running instead, please first press the Toggle Camera button.</h5>
+            <h5>Have the external camera to the right of the patient and the laptop camera to the left.</h5>
             <br/>
             <button className='btn btn-warning' style={{width: "20%"}} onClick={fixCamera}>Toggle Camera</button>
         </div>
