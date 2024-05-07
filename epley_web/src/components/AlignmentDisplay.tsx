@@ -30,7 +30,7 @@ const AlignmentDisplay = ({stage, canal, stageCallback, alignmentCallback, camer
         if (loop.current) clearInterval(loop.current)
         let timer = -1.0
         setColor(BLACK)
-        if (stage !== meshPartsLength[canal] - 1 && stage !== 0) 
+        if ((stage !== meshPartsLength[canal] - 1 && stage !== 0) || canal === "lateral")
             loop.current = setInterval(() => {
                 const alignment = alignmentCallback()
                 setDisplayAligment(alignment)

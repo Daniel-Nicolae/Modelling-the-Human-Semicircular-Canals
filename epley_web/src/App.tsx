@@ -25,7 +25,7 @@ const App = () => {
   const [started, setStarted] = useState(false)
   const handleStarted = () => {
       if (!started) setStarted(true) 
-      setStage((stage + 1) % meshPartsLength[affectedCanal])
+      if (affectedCanal !== "lateral") setStage((stage + 1) % meshPartsLength[affectedCanal])
   }
 
   const meshActive = useRef(false)
@@ -93,7 +93,12 @@ const App = () => {
       </div>
       <div style={{width: "1%"}}/>
       <div style={{display: "flex", flexDirection: "column", width: "50%", alignContent: "center"}}>
-        <InstructionsScreen stage={stage} canal={affectedCanal} ear={affectedEar} fixCamera={fixCamera}/>
+        <InstructionsScreen
+            started={started} 
+            stage={stage} 
+            canal={affectedCanal} 
+            ear={affectedEar} 
+            fixCamera={fixCamera}/>
       </div>
 
     </div>

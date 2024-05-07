@@ -70,21 +70,6 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
                     meshParts.current.push(loadedMesh)
                 })
             }
-
-            // const meshPath = "meshes/" + canal + ".ply"
-            // const meshPath = "meshes/capsule.ply"
-            // loader.load(meshPath, (geometry) => {
-            //     geometry.center()
-
-            //     const material = new THREE.MeshStandardMaterial({color: 0x009cff, side: THREE.DoubleSide, flatShading: true})
-            //     const loadedMesh = new THREE.Mesh(geometry, material);
-
-                
-            //     if ((ear === "left" && currentCamera === 0) || (ear === "right" && currentCamera === 1)) 
-            //         loadedMesh.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1))
-            //     meshParts.current.push(loadedMesh)
-            //     scene.current!.add(loadedMesh)
-            // })
         }
 
         // Add ground

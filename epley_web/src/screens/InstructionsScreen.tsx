@@ -1,13 +1,14 @@
 import { useEffect } from "react"
 
 interface Props {
+    started: boolean
     stage: number
     canal: string
     ear: string
     fixCamera: () => void
 }
 
-const InstructionsScreen = ({stage, ear, canal, fixCamera}: Props) => {
+const InstructionsScreen = ({started, stage, ear, canal, fixCamera}: Props) => {
 
     useEffect(() => {
         if (!ear || !canal) return
@@ -19,7 +20,7 @@ const InstructionsScreen = ({stage, ear, canal, fixCamera}: Props) => {
             ctx.clearRect(0, 0, window.innerWidth/2, window.innerHeight)
             ctx.drawImage(instructionImage, 0, 0)
         }
-    }, [stage])
+    }, [stage, started])
 
     if (ear && canal) return <canvas id="instructionCanvas"/>
     else return (
