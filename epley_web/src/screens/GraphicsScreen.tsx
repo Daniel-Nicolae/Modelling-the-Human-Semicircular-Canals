@@ -23,6 +23,11 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
     const renderer = useRef<THREE.WebGLRenderer>()
     const meshParts = useRef<THREE.Mesh[]>([])
     const alignment = useRef(0)
+
+    const ORANGE_COLOUR = 0xffbb33
+    const BLUE_COLOUR = 0x0022aa
+    const BACKGR_COLOUR = 0x72645b
+
     useEffect(() => {
         const pi = Math.PI
         // Renderer initialisation
@@ -32,7 +37,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
 
         // Scene initialisation
         scene.current = new THREE.Scene()
-        scene.current.background = new THREE.Color(0x72645b)
+        scene.current.background = new THREE.Color(BACKGR_COLOUR)
 
         // Camera initialisation
         camera.current = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight)
@@ -40,10 +45,10 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
         camera.current.lookAt(0, 0, 0)
 
         // Add lights
-        const sectionHighlight = new THREE.AmbientLight(0xffbb33, 2)
-        // scene.current.add(sectionHighlight)
+        const sectionHighlight = new THREE.AmbientLight(ORANGE_COLOUR, 0.8)
+        scene.current.add(sectionHighlight)
 
-        const pointLight = new THREE.PointLight(0xffffff, 350)
+        const pointLight = new THREE.PointLight(0xffffff, 250)
         pointLight.castShadow = true
         camera.current.add(pointLight);
         scene.current.add(camera.current)
@@ -55,7 +60,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
                 const meshPath = "meshes/" + canal + "_" + i.toString() + ".ply"
                 loader.load(meshPath, (geometry) => {
 
-                    const color = (i === stage) ? 0xffbb33 : 0x0022aa 
+                    const color = (i === stage) ? ORANGE_COLOUR : BLUE_COLOUR
                     const material = new THREE.MeshStandardMaterial({color: color, side: THREE.DoubleSide, flatShading: true})
                     const loadedMesh = new THREE.Mesh(geometry, material);
 
