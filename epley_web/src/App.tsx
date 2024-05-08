@@ -24,8 +24,9 @@ const App = () => {
 
   const [started, setStarted] = useState(false)
   const handleStarted = () => {
+      // if (affectedCanal !== "lateral" && !started) setStage((stage + 1) % meshPartsLength[affectedCanal])
+      if (affectedCanal !== "lateral") setStage((stage + 1) % meshPartsLength[affectedCanal])  // remove this at the end
       if (!started) setStarted(true) 
-      if (affectedCanal !== "lateral") setStage((stage + 1) % meshPartsLength[affectedCanal])
   }
 
   const meshActive = useRef(false)
@@ -36,7 +37,7 @@ const App = () => {
   const loopRef = useRef<NodeJS.Timer>()
   const [currentCamera, setCurrentCamera] = useState(0) // 0 is right and 1 is left
   const [cameraIDs, setCameraIDs] = useState<string[]>([])
-  const handleToggleCamera = () => {
+  const toggleCamera = () => {
       if (loopRef.current) clearInterval(loopRef.current)
       setCurrentCamera((currentCamera + 1) % 2)
   }
@@ -57,7 +58,7 @@ const App = () => {
                 canalCallback={setAffectedCanal}
                 ear={affectedEar} 
                 earCallback={setAffectedEar} 
-                cameraCallback={handleToggleCamera}
+                cameraCallback={toggleCamera}
                 currentCamera={currentCamera}
                 startedCallback={setStarted}
                 started={started}
@@ -80,14 +81,14 @@ const App = () => {
             canal={affectedCanal} 
             ear={affectedEar} 
             currentCamera={currentCamera}
-            cameraCallback={handleToggleCamera}
+            cameraCallback={toggleCamera}
             stage={stage}
             stageCallback={setStage}/>
         <Separator space={5}/>
 
         {affectedCanal && affectedEar && 
         <div style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-around"}}>
-          <button className='btn btn-warning' onClick={handleToggleCamera}> Toggle Camera </button>
+          <button className='btn btn-warning' onClick={toggleCamera}> Toggle Camera </button> {/*remove at the end*/}
           <button className='btn btn-warning' onClick={() => {meshActive.current = !meshActive.current}}> Toggle Face Mesh </button>
           <button className='btn btn-warning' onClick={handleStarted}> Start </button>
         </div>}
