@@ -33,9 +33,9 @@ function SelectScreen ({canalCallback, earCallback, cameraCallback, currentCamer
         <div>
             <h4 style={{textAlign: "center"}}>Please select <br/> the affected canal</h4>
             <Separator space={8}/>
-            <ButtonColumn buttonLabels={canals} onPressButton={handlePressCanal}/>
+            <ButtonColumn buttonLabels={canals} onPressButton={handlePressCanal} bgColor="#ffbb33" color="#000000"/>
             <Separator space={8}/>
-            <ButtonColumn buttonLabels={ears} onPressButton={handlePressEar}/>
+            <ButtonColumn buttonLabels={ears} onPressButton={handlePressEar} bgColor="#0022aa" color="#ffffff"/>
         </div>
     )
 }
