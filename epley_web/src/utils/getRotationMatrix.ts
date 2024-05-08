@@ -58,8 +58,8 @@ const getRotationMatrix = (landmarks: Keypoint[], ear: String, canal: String, cu
     rotationMatrix.multiply(pitchCorrectionMatrix)
     const rollMatrix = getRollMatrix(currentCamera)
 
-    return rollMatrix.multiply(rotationMatrix)
-    // return rotationMatrix
+    // return rollMatrix.multiply(rotationMatrix)
+    return rotationMatrix
 }
 
 export default getRotationMatrix
