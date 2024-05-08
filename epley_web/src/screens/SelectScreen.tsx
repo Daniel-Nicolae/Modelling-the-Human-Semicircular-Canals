@@ -4,7 +4,9 @@ import ButtonColumn from "../components/ButtonColumn";
 import Separator from "../components/Separator";
 
 interface Props {
+    canal: string
     canalCallback: (canal: string) => void
+    ear: string
     earCallback: (ear: string) => void
     cameraCallback: () => void
     currentCamera: number
@@ -12,18 +14,26 @@ interface Props {
     started: boolean
 }
 
-function SelectScreen ({canalCallback, earCallback, cameraCallback, currentCamera, startedCallback, started}: Props) {
+function SelectScreen ({canal, canalCallback, ear, earCallback, cameraCallback, currentCamera, startedCallback, started}: Props) {
+
+    function fixCamera(ear: string, canal: string) {
+        if (canal === "posterior" && ear === "left" && currentCamera === 0) cameraCallback()
+        if (canal === "posterior" && ear === "right" && currentCamera === 1) cameraCallback()
+        if (canal === "anterior" && ear === "right" && currentCamera === 0) cameraCallback()
+        if (canal === "anterior" && ear === "left" && currentCamera === 1) cameraCallback()
+    }
+
     const handlePressCanal = (event: MouseEvent) => {
         if (started) return
         const target = event.target as HTMLButtonElement
         canalCallback(target.value)
+        fixCamera(ear, target.value)
     }
     const handlePressEar = (event: MouseEvent) => {
         if (started) return
         const target = event.target as HTMLButtonElement
         earCallback(target.value)
-        if (target.value === "left" && currentCamera === 0) cameraCallback()
-        else if (target.value === "right" && currentCamera === 1) cameraCallback()
+        fixCamera(target.value, canal)
     }
 
     const canals: string[] = ["anterior", "posterior", "lateral"]

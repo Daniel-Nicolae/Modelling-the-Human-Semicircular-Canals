@@ -53,7 +53,9 @@ const App = () => {
         <div style={{display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between"}}>
           <div style={{display: "flex", flexDirection: "column", width: "45%", alignItems: "center"}}>
             <SelectScreen 
-                canalCallback={setAffectedCanal} 
+                canal={affectedCanal}
+                canalCallback={setAffectedCanal}
+                ear={affectedEar} 
                 earCallback={setAffectedEar} 
                 cameraCallback={handleToggleCamera}
                 currentCamera={currentCamera}
