@@ -13,3 +13,6 @@ cochlea_data/*.xlsx
 
 # mean meshes - final ones copied in app's public
 meshes
+
+# experiments
+experiments.ipynb
