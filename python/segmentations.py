@@ -59,8 +59,22 @@ def compute_colour_list():
     mesh = o3d.io.read_triangle_mesh(path)
     return np.array(mesh.vertex_colors)
 
+def norm(x):
+    if max(x) < 1: return x
+    return np.array(x)/256
+
 def colour_mesh(mesh):
     colours = compute_colour_list()
+    new_col_dict = {
+    1.23529412: [0x00, 0x22, 0xaa],
+    1.01960784: [0xff, 0xbb, 0x33],
+    1.85882353: [0x00, 0x22, 0xaa] if np.random.uniform(0, 1) < 0.5 else [0xff, 0xbb, 0x33],
+    2.00784314: [0xcc, 0xbb, 0xaa],
+    1:  [0.3, 0.3, 0.3],
+    1.85098039: [0.3, 0.3, 0.3]
+}
+    for i, col in enumerate(colours):
+        colours[i] = norm(new_col_dict[np.sum(col).round(8)])
     mesh.vertex_colors = o3d.utility.Vector3dVector(colours)
     return mesh 
 

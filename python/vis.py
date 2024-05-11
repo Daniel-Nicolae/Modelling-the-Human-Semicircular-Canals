@@ -36,26 +36,31 @@ def visualise_segmented_subjects(subjects):
     visualise_meshes(meshes)
 
 
-def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, verbose=False):
+def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, rotate=True, verbose=False):
     if filter: subjects = get_subjects_having_landmarks(subjects, landmarks)
     if verbose: print("Subjects shown (green to blue):", subjects)
 
     all_lines = []
     all_canal_meshes = []
-    colour_step = 1.0/len(subjects)
+    blue = np.array([0x00, 0x22, 0xaa])/256
+    gold = np.array([0xff, 0xbb, 0x33])/256
+    colour_step = (gold - blue) / len(subjects)
 
     offset = np.zeros(3)
     for i, subject in enumerate(subjects):
-        vals, vecs = get_canal_plane(subject, canal, landmarks)
         vertices = get_canal_mesh(subject, canal, True, True)[0] 
-        if landmarks is not None:
+        if landmarks is not None and rotate:
+            vals, vecs = get_canal_plane(subject, canal, landmarks)
             rotation_matrix = get_rotation_matrix(subject, landmarks)
             vertices = rotate_vertices(vertices, rotation_matrix)
+        else: 
+            vals, vecs = get_canal_plane(subject, canal)
         offset += 20*vals[0]*vecs[:, 0]
 
         canal_mesh = o3d.geometry.PointCloud()
         canal_mesh.points = o3d.utility.Vector3dVector(vertices + offset)
-        canal_mesh.paint_uniform_color([0, 1-colour_step*i, colour_step*i]) 
+
+        canal_mesh.paint_uniform_color(blue + i*colour_step) 
 
         lines = o3d.geometry.LineSet()
         a = vecs[:, 2]*np.sqrt(vals[2])*2 # "major semiaxis"
@@ -65,8 +70,8 @@ def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, verbos
                                                 list(-b+a+offset), list(-b-a+offset)])
         lines.lines = o3d.utility.Vector2iVector([[1, 2], [3, 4], [6, 7],   # major
                                                     [0, 5], [1, 6], [2, 7]])  # minor
-        lines.colors = o3d.utility.Vector3dVector([[1, colour_step*i, 0], [1, colour_step*i, 0], [1, colour_step*i, 0], 
-                                                [colour_step*i, 0, 1], [colour_step*i, 0, 1], [colour_step*i, 0, 1]])
+        lines.colors = o3d.utility.Vector3dVector([[1, 0, 0], [1, 0, 0], [1, 0, 0], 
+                                                [0, 0, 1], [0, 0, 1], [0, 0, 1]])
 
         all_canal_meshes.append(canal_mesh)
         all_lines.append(lines)
