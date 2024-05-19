@@ -26,7 +26,7 @@ const GraphicsScreen = ({landmarksCallback, ear, canal, currentCamera, cameraCal
 
     const ORANGE_COLOUR = 0xffbb33
     const BLUE_COLOUR = 0x0022aa
-    const BACKGR_COLOUR = 0x72645b
+    const BACKGR_COLOUR = 0xbbaa99
 
     useEffect(() => {
         const pi = Math.PI
