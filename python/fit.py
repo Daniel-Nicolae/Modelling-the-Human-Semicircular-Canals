@@ -182,7 +182,7 @@ def correct_fiducials_dicts(visible=True, save_pickle=False):
     best_fids_dict = {"anterior": ["name", "name"], "lateral": ["name", "name"], "posterior": ["name", "name"], "all": ["name", "name"]}
 
     for key in results_dict:
-        if kept_dict[key] >= 25: 
+        if kept_dict[key] >= 25 and "occiput" not in key: 
             for canal in ["anterior", "posterior", "lateral"]:
                 if results_dict[key][canal][0] < min_angs_dict[canal]:
                     min_angs_dict[canal] = results_dict[key][canal][0]
