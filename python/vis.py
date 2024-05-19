@@ -13,7 +13,7 @@ def visualise_vertices(vertices, has_color=False):
     o3d.visualization.draw_geometries([cloud])
 
 def visualise_canal_mesh(subject, canal):
-    col_dict = {"anterior": [0, 1.0, 0], "posterior": [0, 0.23, 1], "lateral": [0.5, 0.5, 1]}
+    col_dict = {"anterior": [0, 1.0, 0], "posterior": np.array([0x00, 0x22, 0xaa])/256, "lateral": [0.5, 0.5, 1]}
     vertices, triangles = get_canal_mesh(subject, canal)
     canal_mesh = o3d.geometry.TriangleMesh()
     canal_mesh.vertices = o3d.utility.Vector3dVector(vertices)
@@ -36,7 +36,7 @@ def visualise_segmented_subjects(subjects):
     visualise_meshes(meshes)
 
 
-def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, rotate=True, verbose=False):
+def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, rotate=True, verbose=False, spacing=3):
     if filter: subjects = get_subjects_having_landmarks(subjects, landmarks)
     if verbose: print("Subjects shown (green to blue):", subjects)
 
@@ -48,19 +48,21 @@ def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, rotate
 
     offset = np.zeros(3)
     for i, subject in enumerate(subjects):
-        vertices = get_canal_mesh(subject, canal, True, True)[0] 
+        vertices, triangles = get_canal_mesh(subject, canal, True, True)
         if landmarks is not None and rotate:
             vals, vecs = get_canal_plane(subject, canal, landmarks)
             rotation_matrix = get_rotation_matrix(subject, landmarks)
             vertices = rotate_vertices(vertices, rotation_matrix)
         else: 
             vals, vecs = get_canal_plane(subject, canal)
-        offset += 20*vals[0]*vecs[:, 0]
+        offset +=spacing*vecs[:, 0]
 
-        canal_mesh = o3d.geometry.PointCloud()
-        canal_mesh.points = o3d.utility.Vector3dVector(vertices + offset)
+        canal_mesh = o3d.geometry.TriangleMesh()
+        canal_mesh.vertices = o3d.utility.Vector3dVector(vertices + offset)
+        canal_mesh.triangles = o3d.utility.Vector3iVector(triangles)
 
-        canal_mesh.paint_uniform_color(blue + i*colour_step) 
+        canal_mesh.paint_uniform_color((blue + i*colour_step)) 
+        canal_mesh.compute_vertex_normals()
 
         lines = o3d.geometry.LineSet()
         a = vecs[:, 2]*np.sqrt(vals[2])*2 # "major semiaxis"
@@ -76,7 +78,7 @@ def visualise_canal_planes(subjects, canal, landmarks=None, filter=False, rotate
         all_canal_meshes.append(canal_mesh)
         all_lines.append(lines)
 
-    o3d.visualization.draw_geometries([*all_canal_meshes, *all_lines])
+    o3d.visualization.draw_geometries([*all_canal_meshes, *all_lines], mesh_show_back_face=True)
 
 
 def best_alignment(subjects, canal, mode, visible=True, all=False, corrected=False, verbose=False):
@@ -129,15 +131,14 @@ def visualise_variation_modes(subject, canal, save_screenshots=False):
     evals, evecs = load_variation_modes(canal)
     
     canal_mesh = o3d.geometry.TriangleMesh()
-    v, t = get_canal_mesh(subject, canal)
+    v, t = get_canal_mesh(subject, canal, full=False)
     canal_mesh.vertices = o3d.utility.Vector3dVector(v)
     canal_mesh.triangles = o3d.utility.Vector3iVector(t)
     canal_mesh.compute_vertex_normals()
-    canal_mesh.paint_uniform_color([0, 0.7, 1]) 
+    canal_mesh.paint_uniform_color(np.array([0x00, 0x22, 0xaa])/236) 
 
-    points_original = o3d.geometry.PointCloud()
-    points_original.points = o3d.utility.Vector3dVector(v)
-    points_original.paint_uniform_color([1, 0.7, 0]) 
+    points_original = o3d.geometry.LineSet.create_from_triangle_mesh(canal_mesh)
+    points_original.paint_uniform_color(np.array([0xff, 0xbb, 0x33])/256) 
 
     mode_vertices = evecs[:, -1].reshape(len(v), 3)
     step = np.sqrt(evals[-1])/25
