@@ -1,19 +1,21 @@
 from segmentations import *
 from landmarks import *
+import numpy as np
 import copy
 
 canals = ["anterior", "posterior", "lateral"]
 
-def get_rotation_matrix(subject, landmarks):
+def get_rotation_matrix(subject, landmarks, error=0):
     if len(landmarks) != 3: raise ValueError("Must pass 3 landmarks")
     landmarks_dict = get_landmarks_from_ply(subject)
     for i in range(3):
         if landmarks[i] not in landmarks_dict.keys():
             raise ValueError(landmarks[i] + " is not a valid landmark!")
         
-    A = np.array(landmarks_dict[landmarks[0]])*100
-    B = np.array(landmarks_dict[landmarks[1]])*100
-    C = np.array(landmarks_dict[landmarks[2]])*100
+    
+    A = np.array(landmarks_dict[landmarks[0]])*100 + np.random.normal(0, error*10)
+    B = np.array(landmarks_dict[landmarks[1]])*100 + np.random.normal(0, error*10)
+    C = np.array(landmarks_dict[landmarks[2]])*100 + np.random.normal(0, error*10)
 
     x = (B-A)/np.linalg.norm(B-A)
     y = (C-A) - (C-A).dot(x) * x
@@ -36,7 +38,7 @@ def rotate_mesh(mesh, matrix):
     return mesh_transformed
 
 
-def get_canal_plane(subject, canal, landmarks=None):
+def get_canal_plane(subject, canal, landmarks=None, error=0):
     vertices, triangles = get_canal_mesh(subject, canal)
     vertices -= np.mean(vertices, axis=0)
 
@@ -59,7 +61,7 @@ def get_canal_plane(subject, canal, landmarks=None):
     vecs[:, 2] = np.cross(vecs[:, 0], vecs[:, 1])
 
     if landmarks is not None:
-        rotation_matrix = get_rotation_matrix(subject, landmarks)
+        rotation_matrix = get_rotation_matrix(subject, landmarks, error=error)
         for i in range(3):
             vecs[:, i] = rotate_vector(vecs[:, i], rotation_matrix)
 
@@ -76,10 +78,15 @@ def get_subjects_having_landmarks(subjects, landmarks):
         if keep: kept.append(subject)
     return kept
 
-def compute_normals(subjects, canal, landmarks=None):
+def compute_normals(subjects, canal, landmarks=None, error=0):
     normals = []
     for subject in subjects:
-        vals, vecs = get_canal_plane(subject, canal, landmarks)
+        vals, vecs = get_canal_plane(subject, canal, None, error=error)
+
+        rotation_matrix = get_rotation_matrix(subject, landmarks, error=error)
+        for i in range(3):
+            vecs[:, i] = rotate_vector(vecs[:, i], rotation_matrix)
+
         normals.append(vecs[:, 0])
     return np.array(normals)
 
@@ -96,9 +103,9 @@ def get_best_coord_system(subjects, canal, visible=True, corrected=False):
     kept = get_subjects_having_landmarks(subjects, best_landmarks)
     return compute_average_coord_system(kept, canal, best_landmarks)
 
-def compute_normals_stats(subjects, canal, landmarks=None, verbose=False, filter=False):
+def compute_normals_stats(subjects, canal, landmarks=None, verbose=False, filter=False, error=0):
     if filter: subjects = get_subjects_having_landmarks(subjects, landmarks)
-    normals = compute_normals(subjects, canal, landmarks)
+    normals = compute_normals(subjects, canal, landmarks, error=error)
     sample_cov = np.zeros((3, 3))
     mean_normal = np.mean(normals, axis = 0)
     angles = []
