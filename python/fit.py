@@ -81,11 +81,11 @@ def get_subjects_having_landmarks(subjects, landmarks):
 def compute_normals(subjects, canal, landmarks=None, error=0):
     normals = []
     for subject in subjects:
-        vals, vecs = get_canal_plane(subject, canal, None, error=error)
+        vals, vecs = get_canal_plane(subject, canal, landmarks, error=error)
 
-        rotation_matrix = get_rotation_matrix(subject, landmarks, error=error)
-        for i in range(3):
-            vecs[:, i] = rotate_vector(vecs[:, i], rotation_matrix)
+        # rotation_matrix = get_rotation_matrix(subject, landmarks, error=error)
+        # for i in range(3):
+        #     vecs[:, i] = rotate_vector(vecs[:, i], rotation_matrix)
 
         normals.append(vecs[:, 0])
     return np.array(normals)

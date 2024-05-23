@@ -131,14 +131,17 @@ def visualise_variation_modes(subject, canal, save_screenshots=False):
     evals, evecs = load_variation_modes(canal)
     
     canal_mesh = o3d.geometry.TriangleMesh()
-    v, t = get_canal_mesh(subject, canal, full=False)
+    v, t = get_canal_mesh(subject, canal, full=canal[0]=="a")
     canal_mesh.vertices = o3d.utility.Vector3dVector(v)
     canal_mesh.triangles = o3d.utility.Vector3iVector(t)
     canal_mesh.compute_vertex_normals()
-    canal_mesh.paint_uniform_color(np.array([0x00, 0x22, 0xaa])/236) 
+    if canal[0] == "l": col = np.array([0xcc, 0xbb, 0xaa])/276
+    elif canal[0] == "a": col = np.array([0xff, 0xbb, 0x33])/276
+    else: col = np.array([0x00, 0x22, 0xaa])/236
+    canal_mesh.paint_uniform_color(col) 
 
     points_original = o3d.geometry.LineSet.create_from_triangle_mesh(canal_mesh)
-    points_original.paint_uniform_color(np.array([0xff, 0xbb, 0x33])/256) 
+    points_original.paint_uniform_color(np.array([0x00, 0x00, 0x00])/256) 
 
     mode_vertices = evecs[:, -1].reshape(len(v), 3)
     step = np.sqrt(evals[-1])/25
@@ -165,10 +168,24 @@ def visualise_variation_modes(subject, canal, save_screenshots=False):
         step = np.sqrt(evals[-3])/25
         reset2(vis)
 
+    def set_mode_4(vis):
+        nonlocal mode_vertices, step
+        reset1()
+        mode_vertices = evecs[:, -4].reshape(len(v), 3)
+        step = np.sqrt(evals[-4])/25
+        reset2(vis)
+
+    def set_mode_5(vis):
+        nonlocal mode_vertices, step
+        reset1()
+        mode_vertices = evecs[:, -5].reshape(len(v), 3)
+        step = np.sqrt(evals[-5])/25
+        reset2(vis)
+
     def add_mode(vis):
         nonlocal step_count
         v = np.array(canal_mesh.vertices)
-        if step_count <= 50:
+        if step_count <= 100:
             v += mode_vertices*step
             step_count += 1
             if save_screenshots and step_count % 3 == 0: screenshot(vis)
@@ -182,7 +199,7 @@ def visualise_variation_modes(subject, canal, save_screenshots=False):
     def subtract_mode(vis):
         nonlocal step_count
         v = np.array(canal_mesh.vertices)
-        if step_count >= -50:
+        if step_count >= -100:
             v -= mode_vertices*step
             step_count -= 1
             if save_screenshots and step_count % 3 == 0: screenshot(vis)
@@ -228,6 +245,8 @@ def visualise_variation_modes(subject, canal, save_screenshots=False):
     vis.register_key_callback(49, set_mode_1)
     vis.register_key_callback(50, set_mode_2)
     vis.register_key_callback(51, set_mode_3)
+    vis.register_key_callback(52, set_mode_4)
+    vis.register_key_callback(53, set_mode_5)
     vis.register_key_callback(ord("W"), screenshot)
 
     vis.get_render_option().mesh_show_back_face = True
